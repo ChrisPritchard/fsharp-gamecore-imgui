@@ -10,14 +10,18 @@ let main _ =
     let config = {
         clearColour = Some (new Color (50, 50, 50))
         resolution = Windowed (800, 600)
-        assetsToLoad = []
+        assetsToLoad = [
+            Font ("connection", "./connection")
+        ]
         fpsFont = None
     }
 
     let advanceModel runState _ = 
         if wasJustPressed Keys.Escape runState then None
         else Some ()
-    let getView _ _ = []
+    let getView _ _ = [
+        Text ("connection", "Hello World", (10, 10), TopLeft, 1., Color.White)
+    ]
 
     runGame config advanceModel getView
 
