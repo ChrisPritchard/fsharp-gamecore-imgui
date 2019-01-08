@@ -1,8 +1,9 @@
-﻿
-open Microsoft.Xna.Framework
+﻿open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
 open GameCore.GameRunner
+
+open GameCore.UI
 
 [<EntryPoint>]
 let main _ =
@@ -16,12 +17,28 @@ let main _ =
         fpsFont = None
     }
 
-    let advanceModel runState _ = 
-        if wasJustPressed Keys.Escape runState then None
-        else Some ()
-    let getView _ _ = [
-        Text ("connection", "Hello World", (10, 10), TopLeft, 1., Color.White)
+    let startModel = [
+        Button { 
+            position = 20,20
+            size = 200, 50
+            text = "hello world"
+            textAsset = "connection"
+            textScale = 0.4
+            borderWidth = 2
+            idleColours = { background = Color.Black; border = None; text = Color.White }
+            hoverColours = Some { background = Color.White; border = Some Color.Black; text = Color.Black }
+            pressedColours = { background = Color.Gray; border = Some Color.Black; text = Color.White }
+        }
     ]
+
+    let advanceModel runState model = 
+        if wasJustPressed Keys.Escape runState then None
+        else
+            match model with
+            | None -> Some startModel
+            | _ -> model
+
+    let getView runState model = List.collect (GameCore.UI.getView runState) model
 
     runGame config advanceModel getView
 
