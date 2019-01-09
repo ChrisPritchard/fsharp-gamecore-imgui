@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="UIElements.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Functions.fs" />
   </ItemGroup>
 
   <ItemGroup>
