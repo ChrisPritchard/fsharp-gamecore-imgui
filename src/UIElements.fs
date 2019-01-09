@@ -67,5 +67,9 @@ let getElementView runState =
                 yield Colour (rect, borderColour)
                 let inner = contract width rect
                 yield Colour (inner, colours.background)
-            yield Text (config.textAsset, config.text, centre rect, Centre, config.textScale, colours.text)
+
+            let _, _, _, height = rect
+            let padding = height / 4
+            let textRect = contract padding rect
+            yield Text (config.textAsset, config.text, textRect, Centre, colours.text)
         ]
