@@ -3,7 +3,7 @@ open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
 open GameCore.GameRunner
 
-open GameCore.UI
+open GameCore.UIElements
 
 [<EntryPoint>]
 let main _ =
@@ -24,10 +24,9 @@ let main _ =
             text = "hello world"
             textAsset = "connection"
             textScale = 0.4
-            borderWidth = 2
             idleColours = { background = Color.Black; border = None; text = Color.White }
-            hoverColours = Some { background = Color.White; border = Some Color.Black; text = Color.Black }
-            pressedColours = { background = Color.Gray; border = Some Color.Black; text = Color.White }
+            hoverColours = Some { background = Color.White; border = Some (2, Color.Black); text = Color.Black }
+            pressedColours = { background = Color.Gray; border = Some (2, Color.Black); text = Color.White }
         }
     ]
 
@@ -38,7 +37,7 @@ let main _ =
             | None -> Some startModel
             | _ -> model
 
-    let getView runState model = List.collect (GameCore.UI.getView runState) model
+    let getView runState model = List.collect (getElementView runState) model
 
     runGame config advanceModel getView
 

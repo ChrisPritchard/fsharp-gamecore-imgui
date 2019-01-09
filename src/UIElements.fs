@@ -1,4 +1,4 @@
-﻿module GameCore.UI
+﻿module GameCore.UIElements
 
 open Microsoft.Xna.Framework
 open GameCore.GameModel
@@ -6,7 +6,7 @@ open GameCore.GameModel
 type UIColourSet = {
     text: Color
     background: Color
-    border: Color option
+    border: (int * Color) option
 }
 
 type ButtonConfig = {
@@ -15,7 +15,6 @@ type ButtonConfig = {
     text: string
     textAsset: string
     textScale: float
-    borderWidth: int
     idleColours: UIColourSet
     hoverColours: UIColourSet option
     pressedColours: UIColourSet
@@ -41,7 +40,7 @@ let contract n (rx, ry, rw, rh) =
 let centre (rx, ry, rw, rh) =
     rx + rw/2, ry + rh/2
 
-let getEvents runState =
+let getElementEvents runState =
     function
     | Button config -> 
         if not <| contains runState.mouse.position (pointsFor config.position config.size)
@@ -50,10 +49,10 @@ let getEvents runState =
             match runState.mouse.pressed with
             | true, _ | _, true -> Some Pressed | _ -> Some Hover
 
-let getView runState =
+let getElementView runState =
     function
     | Button config ->
-        let events = getEvents runState (Button config)
+        let events = getElementEvents runState (Button config)
         let colours = 
             match events, config.hoverColours with
             | None, _ | Some Hover, None -> config.idleColours
@@ -61,10 +60,10 @@ let getView runState =
             | Some Pressed, _ -> config.pressedColours
         let rect = rectFor config.position config.size
         [
-            match config.borderWidth, colours.border with
-            | 0, _ | _, None ->
+            match colours.border with
+            | None ->
                 yield Colour (rect, colours.background)
-            | width, Some borderColour ->
+            | Some (width, borderColour) ->
                 yield Colour (rect, borderColour)
                 let inner = contract width rect
                 yield Colour (inner, colours.background)
