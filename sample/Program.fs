@@ -19,22 +19,140 @@ let main _ =
     }
 
     let startModel = [
-        Button { 
-            position = 20, 20
-            size = 200, 50
+        yield Button { 
+            destRect = 20, 20, 200, 50
             text = "sample button"
             fontAsset = "connection"
             idleColours = { background = Color.Black; border = None; text = Color.White }
             hoverColours = Some { background = Color.White; border = Some (2, Color.Black); text = Color.Black }
             pressedColours = { background = Color.Gray; border = Some (2, Color.Black); text = Color.White }
         }
-        Label {
-            position = 240, 20
-            size = 200, 100
+        yield Label {
+            destRect = 240, 20, 200, 100
             text = ["this is some sample text"; "that runs over three lines."; "labels have no events"]
             fontAsset = "connection"
             colours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
         }
+
+        let labelColours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
+        let innerLabel text = Label { destRect = 0,0,0,0; text = [text]; fontAsset = "connection"; colours = labelColours }
+        yield Panel ({
+            destRect = 20, 80, 200, 200
+            background = None
+            border = None
+            padding = None
+            alignment = Some (AlignVertically 0)
+        }, [
+            yield innerLabel "a panel   "
+            yield innerLabel "with no   "
+            yield innerLabel "background"
+            yield innerLabel "or spacing"
+        ])
+
+        yield Panel ({
+            destRect = 240, 200, 400, 50
+            background = Some Color.DarkGray
+            border = Some (4, Color.Gray)
+            padding = Some 10
+            alignment = Some (AlignHorizontally 10)
+        }, [
+            yield innerLabel "  a panel  "
+            yield innerLabel "   with a  "
+            yield innerLabel " background"
+            yield innerLabel "and spacing"
+        ])
+
+        yield Panel ({
+            destRect = 20, 320, 300, 250
+            background = Some Color.DarkGray
+            border = Some (4, Color.Gray)
+            padding = Some 10
+            alignment = Some (AlignHorizontally 10)
+        }, [
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerLabel "label 1"
+                yield innerLabel "label 2"
+                yield innerLabel "label 3"
+            ])
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerLabel "label 4"
+                yield innerLabel "label 5"
+                yield innerLabel "label 6"
+            ])
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerLabel "label 7"
+                yield innerLabel "label 8"
+                yield innerLabel "label 9"
+            ])
+        ])
+
+        let innerButton text = Button { 
+            destRect = 0, 0, 0, 0
+            text = text
+            fontAsset = "connection"
+            idleColours = { background = Color.Red; border = None; text = Color.White }
+            hoverColours = Some { background = Color.White; border = Some (2, Color.Red); text = Color.Black }
+            pressedColours = { background = Color.DarkRed; border = Some (2, Color.Red); text = Color.Gray }
+        }
+        yield Panel ({
+            destRect = 340, 320, 300, 250
+            background = Some Color.DarkGray
+            border = Some (4, Color.Gray)
+            padding = Some 10
+            alignment = Some (AlignHorizontally 10)
+        }, [
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerButton "button 1"
+                yield innerButton "button 2"
+                yield innerButton "button 3"
+            ])
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerButton "button 4"
+                yield innerButton "button 5"
+                yield innerButton "button 6"
+            ])
+            yield Panel ({
+                destRect = 0, 0, 0, 0
+                background = None
+                border = None
+                padding = None
+                alignment = Some (AlignVertically 10)
+            }, [
+                yield innerButton "button 7"
+                yield innerButton "button 8"
+                yield innerButton "button 9"
+            ])
+        ])
     ]
 
     let advanceModel runState model = 

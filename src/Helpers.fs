@@ -1,13 +1,10 @@
 module GameCore.UIElements.Helpers
 
-let internal pointsFor (x, y) (w, h) = 
+let internal pointsFor (x, y, w, h) = 
     x, y, x + w, y + h
 
 let internal contains (x, y) (rx, ry, rmx, rmy) = 
     x >= rx && y >= ry && x <= rmx && y <= rmy
-
-let internal rectFor (x, y) (w, h) = 
-    x, y, w, h
 
 let internal contract n (rx, ry, rw, rh) =
     rx + n, ry + n, rw - 2*n, rh - 2*n
