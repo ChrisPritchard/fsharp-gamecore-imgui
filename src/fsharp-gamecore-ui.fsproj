@@ -2,7 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>fsharp_gamecore_ui</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageVersion>0.0.1</PackageVersion>
+    <PackageId>fsharp-gamecore-ui</PackageId>
+    <Title>FSharp GameCore UI</Title>
+    <Authors>Christopher Pritchard (https://github.com/ChrisPritchard)</Authors>
+    <Description>A set of UI elements for use with FSharp GameCore</Description>
+    <PackageTags>monogame fsharp</PackageTags>
+    <PackageLicenseUrl>http://unlicense.org/</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/ChrisPritchard/fsharp-gamecore-ui</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
