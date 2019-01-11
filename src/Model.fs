@@ -2,26 +2,30 @@ module GameCore.UIElements.Model
 
 open Microsoft.Xna.Framework
 
-type UIColourSet = {
+type ColourSet = {
     text: Color
     background: Color
     border: (int * Color) option
 }
 
+type TextSet = {
+    text: string list
+    font: string
+    size: int
+}
+
 type ButtonConfig = {
     destRect: int * int * int * int
-    text: string
-    fontAsset: string
-    idleColours: UIColourSet
-    hoverColours: UIColourSet option
-    pressedColours: UIColourSet
+    text: TextSet
+    idleColours: ColourSet
+    hoverColours: ColourSet option
+    pressedColours: ColourSet
 }
 
 type LabelConfig = {
     destRect: int * int * int * int
-    text: string list
-    fontAsset: string
-    colours: UIColourSet
+    text: TextSet
+    colours: ColourSet
 }
 
 type PanelAlignment =

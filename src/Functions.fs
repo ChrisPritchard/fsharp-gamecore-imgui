@@ -30,10 +30,9 @@ let private getButtonView runState config =
             let inner = contract width config.destRect
             yield Colour (inner, colours.background)
 
-        let _, _, _, height = config.destRect
-        let padding = height / 4
-        let textRect = contract padding config.destRect
-        yield Text (config.fontAsset, config.text, textRect, Centre, colours.text)
+        let x, y, width, height = config.destRect
+        let centre = x + (width / 2), y + (height / 2)
+        yield Text (config.text.font, config.text.text.[0], centre, config.text.size, Centre, colours.text)
     ]
 
 let private getLabelView _ (config: LabelConfig) =
@@ -47,11 +46,10 @@ let private getLabelView _ (config: LabelConfig) =
             let inner = contract width config.destRect
             yield Colour (inner, colours.background)
 
-        let _, _, _, height = config.destRect
-        let padding = height / (2 + List.length config.text + 1)
-        let textRect = contract padding config.destRect
+        let x, y, _, height = config.destRect
+        let padding = height / (2 + config.text.text.Length + 1)
 
-        yield Paragraph (config.fontAsset, config.text, textRect, Centre, colours.text)
+        yield Paragraph (config.text.font, config.text.text, (x + padding, y + padding), config.text.size, TopLeft, colours.text)
     ]
 
 let private getPanelView _ (config: PanelConfig) elements =

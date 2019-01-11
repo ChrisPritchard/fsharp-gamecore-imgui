@@ -18,24 +18,24 @@ let main _ =
         fpsFont = None
     }
 
+    let defaultText = { text = []; font = "connection"; size = 16 }
+
     let startModel = [
         yield Button { 
             destRect = 20, 20, 200, 50
-            text = "sample button"
-            fontAsset = "connection"
+            text = { defaultText with text = ["sample button"] }
             idleColours = { background = Color.Black; border = None; text = Color.White }
             hoverColours = Some { background = Color.White; border = Some (2, Color.Black); text = Color.Black }
             pressedColours = { background = Color.Gray; border = Some (2, Color.Black); text = Color.White }
         }
         yield Label {
             destRect = 240, 20, 200, 100
-            text = ["this is some sample text"; "that runs over three lines."; "labels have no events"]
-            fontAsset = "connection"
+            text = { defaultText with text = ["this is some sample text"; "that runs over three lines."; "labels have no events"] }
             colours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
         }
 
         let labelColours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
-        let innerLabel text = Label { destRect = 0,0,0,0; text = [text]; fontAsset = "connection"; colours = labelColours }
+        let innerLabel text = Label { destRect = 0,0,0,0; text = { defaultText with text = [text] }; colours = labelColours }
         yield Panel ({
             destRect = 20, 80, 200, 200
             background = None
@@ -43,8 +43,8 @@ let main _ =
             padding = None
             alignment = Some (AlignVertically 0)
         }, [
-            yield innerLabel "a panel   "
-            yield innerLabel "with no   "
+            yield innerLabel "a panel"
+            yield innerLabel "with no"
             yield innerLabel "background"
             yield innerLabel "or spacing"
         ])
@@ -56,9 +56,9 @@ let main _ =
             padding = Some 10
             alignment = Some (AlignHorizontally 10)
         }, [
-            yield innerLabel "  a panel  "
-            yield innerLabel "   with a  "
-            yield innerLabel " background"
+            yield innerLabel "a panel"
+            yield innerLabel "with a"
+            yield innerLabel "background"
             yield innerLabel "and spacing"
         ])
 
@@ -106,8 +106,7 @@ let main _ =
 
         let innerButton text = Button { 
             destRect = 0, 0, 0, 0
-            text = text
-            fontAsset = "connection"
+            text = { defaultText with text = [text] }
             idleColours = { background = Color.Red; border = None; text = Color.White }
             hoverColours = Some { background = Color.White; border = Some (2, Color.Red); text = Color.Black }
             pressedColours = { background = Color.DarkRed; border = Some (2, Color.Red); text = Color.Gray }
