@@ -7,6 +7,7 @@ open GameCore.UIElements.Button
 
 type SampleModel = {
     button1: Button
+    label1: Button
 }
 
 [<EntryPoint>]
@@ -29,7 +30,17 @@ let main _ =
             fontSize = 16
             idleColours = { background = Color.Black; border = Some (1, Color.DarkGray); text = Color.White }
             hoverColours = Some { background = Color.White; border = Some (4, Color.Black); text = Color.Black }
-            pressedColours = { background = Color.Gray; border = Some (4, Color.Black); text = Color.White }
+            pressedColours = Some { background = Color.Gray; border = Some (4, Color.Black); text = Color.White }
+            state = []
+        }
+        label1 = {
+            destRect = 190, 20, 300, 80
+            text = ["this is a centred label";"it uses a button with hover"]
+            fontAsset = "connection"
+            fontSize = 16
+            idleColours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.Gray }
+            hoverColours = Some { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
+            pressedColours = None
             state = []
         }
     }
@@ -39,12 +50,19 @@ let main _ =
         else
             match model with
             | None -> Some startModel
-            | Some m -> Some { m with button1 = updateButton runState m.button1 }
+            | Some m -> 
+                Some { 
+                    m with 
+                        button1 = updateButton runState m.button1
+                        label1 = updateButton runState m.label1 }
 
     let getView runState model = 
         [
             yield! getButtonView model.button1
             yield Text ("connection", sprintf "%A" model.button1.state, (20, 70), 16, TopLeft, Color.White)
+
+            yield! getButtonView model.label1
+            yield Text ("connection", sprintf "%A" model.label1.state, (190, 110), 16, TopLeft, Color.White)
 
             let isPressed = isMousePressed (true, false) runState
             let mx, my = runState.mouse.position 

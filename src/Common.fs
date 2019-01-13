@@ -8,6 +8,8 @@ type ColourSet = {
     border: (int * Color) option
 }
 
+type UIState = Idle | Hover | JustPressed | Pressed | JustReleased
+
 let internal pointsFor (x, y, w, h) = 
     x, y, x + w, y + h
 
