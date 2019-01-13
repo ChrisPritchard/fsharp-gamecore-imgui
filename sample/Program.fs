@@ -3,8 +3,11 @@ open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
 open GameCore.GameRunner
 
-open GameCore.UIElements.Model
-open GameCore.UIElements.Functions
+open GameCore.UIElements.Button
+
+type SampleModel = {
+    button1: Button
+}
 
 [<EntryPoint>]
 let main _ =
@@ -18,155 +21,31 @@ let main _ =
         fpsFont = None
     }
 
-    let defaultText = { lines = []; font = "connection"; size = 16 }
-
-    let startModel = [
-        yield Button { 
-            position = 20, 20
-            origin = TopLeft
-            padding = 10
-            text = { defaultText with lines = ["sample button"] }
-            idleColours = { background = Color.Black; border = None; text = Color.White }
-            hoverColours = Some { background = Color.White; border = Some (2, Color.Black); text = Color.Black }
-            pressedColours = { background = Color.Gray; border = Some (2, Color.Black); text = Color.White }
+    let startModel = {
+        button1 = { 
+            destRect = 20, 20, 150, 40
+            text = ["sample button"]
+            fontAsset = "connection"
+            fontSize = 16
+            idleColours = { background = Color.Black; border = Some (1, Color.DarkGray); text = Color.White }
+            hoverColours = Some { background = Color.White; border = Some (4, Color.Black); text = Color.Black }
+            pressedColours = { background = Color.Gray; border = Some (4, Color.Black); text = Color.White }
+            state = []
         }
-        // yield Label {
-        //     destRect = 240, 20, 200, 100
-        //     text = { defaultText with lines = ["this is some sample text"; "that runs over three lines."; "labels have no events"] }
-        //     colours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
-        // }
-
-        // let labelColours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
-        // let innerLabel text = Label { destRect = 0,0,0,0; text = { defaultText with lines = [text] }; colours = labelColours }
-        // yield Panel ({
-        //     destRect = 20, 80, 200, 200
-        //     background = None
-        //     border = None
-        //     padding = None
-        //     alignment = Some (AlignVertically 0)
-        // }, [
-        //     yield innerLabel "a panel"
-        //     yield innerLabel "with no"
-        //     yield innerLabel "background"
-        //     yield innerLabel "or spacing"
-        // ])
-
-        // yield Panel ({
-        //     destRect = 240, 200, 400, 50
-        //     background = Some Color.DarkGray
-        //     border = Some (4, Color.Gray)
-        //     padding = Some 10
-        //     alignment = Some (AlignHorizontally 10)
-        // }, [
-        //     yield innerLabel "a panel"
-        //     yield innerLabel "with a"
-        //     yield innerLabel "background"
-        //     yield innerLabel "and spacing"
-        // ])
-
-        // yield Panel ({
-        //     destRect = 20, 320, 300, 250
-        //     background = Some Color.DarkGray
-        //     border = Some (4, Color.Gray)
-        //     padding = Some 10
-        //     alignment = Some (AlignHorizontally 10)
-        // }, [
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerLabel "label 1"
-        //         yield innerLabel "label 2"
-        //         yield innerLabel "label 3"
-        //     ])
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerLabel "label 4"
-        //         yield innerLabel "label 5"
-        //         yield innerLabel "label 6"
-        //     ])
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerLabel "label 7"
-        //         yield innerLabel "label 8"
-        //         yield innerLabel "label 9"
-        //     ])
-        // ])
-
-        // let innerButton text = Button { 
-        //     destRect = 0, 0, 0, 0
-        //     text = { defaultText with lines = [text] }
-        //     idleColours = { background = Color.Red; border = None; text = Color.White }
-        //     hoverColours = Some { background = Color.White; border = Some (2, Color.Red); text = Color.Black }
-        //     pressedColours = { background = Color.DarkRed; border = Some (2, Color.Red); text = Color.Gray }
-        // }
-        // yield Panel ({
-        //     destRect = 340, 320, 300, 250
-        //     background = Some Color.DarkGray
-        //     border = Some (4, Color.Gray)
-        //     padding = Some 10
-        //     alignment = Some (AlignHorizontally 10)
-        // }, [
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerButton "button 1"
-        //         yield innerButton "button 2"
-        //         yield innerButton "button 3"
-        //     ])
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerButton "button 4"
-        //         yield innerButton "button 5"
-        //         yield innerButton "button 6"
-        //     ])
-        //     yield Panel ({
-        //         destRect = 0, 0, 0, 0
-        //         background = None
-        //         border = None
-        //         padding = None
-        //         alignment = Some (AlignVertically 10)
-        //     }, [
-        //         yield innerButton "button 7"
-        //         yield innerButton "button 8"
-        //         yield innerButton "button 9"
-        //     ])
-        // ])
-    ]
+    }
 
     let advanceModel runState model = 
         if wasJustPressed Keys.Escape runState then None
         else
             match model with
             | None -> Some startModel
-            | _ -> model
+            | Some m -> Some { m with button1 = updateButton runState m.button1 }
 
     let getView runState model = 
-        List.collect (getElementView runState) model
-        @ 
         [
+            yield! getButtonView model.button1
+            yield Text ("connection", sprintf "%A" model.button1.state, (20, 70), 16, TopLeft, Color.White)
+
             let isPressed = isMousePressed (true, false) runState
             let mx, my = runState.mouse.position 
             yield Colour ((mx, my, 5, 5), (if isPressed then Color.Red else Color.Yellow))

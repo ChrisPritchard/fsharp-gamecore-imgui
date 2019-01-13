@@ -16,9 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Model.fs" />
-    <Compile Include="Helpers.fs" />
-    <Compile Include="Functions.fs" />
+    <Compile Include="Common.fs" />
+    <Compile Include="Button.fs" />
   </ItemGroup>
 
   <ItemGroup>
