@@ -17,8 +17,7 @@
 
   <ItemGroup>
     <Compile Include="GameLoop.fs" />
-    <Compile Include="Common.fs" />
-    <Compile Include="Button.fs" />
+    <Compile Include="GameRunner.fs" />
   </ItemGroup>
 
   <ItemGroup>
