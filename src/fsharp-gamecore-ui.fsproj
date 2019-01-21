@@ -16,12 +16,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ImguiRenderer.fs" />
+    <Compile Include="GameLoop.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Button.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="fsharp-gamecore" Version="0.0.6" />
+    <PackageReference Include="ImGui.NET" Version="1.67.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\fsharp-gamecore\fsharp-gamecore.fsproj" />
   </ItemGroup>
 
 </Project>
