@@ -16,7 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ImguiRenderer.fs" />
     <Compile Include="GameLoop.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Button.fs" />
@@ -28,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\fsharp-gamecore\fsharp-gamecore.fsproj" />
+    <ProjectReference Include="..\imgui-renderer\imgui-renderer.csproj" />
   </ItemGroup>
 
 </Project>
