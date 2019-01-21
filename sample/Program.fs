@@ -46,7 +46,7 @@ let main _ =
     }
 
     let advanceModel runState model = 
-        if wasJustPressed Keys.Escape runState then None
+        if GameCore.GameModel.wasJustPressed Keys.Escape runState then None
         else
             match model with
             | None -> Some startModel
