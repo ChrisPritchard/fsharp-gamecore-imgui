@@ -15,6 +15,7 @@ type UIWindow<'UIModel> =
 and UIElement<'UIModel> = 
     | Text of string
     | Button of string * update:('UIModel -> bool -> 'UIModel)
+    | TextInput of startValue:('UIModel -> string) * update:('UIModel -> string -> 'UIModel)
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
 
@@ -22,6 +23,7 @@ let fixedwindow label (x, y, w, h) children = FixedWindow (label, x, y, w, h, ch
 let window label (x, y) children = Window (label, x, y, children)
 let text value = Text value
 let button value update = Button (value, update)
+let textinput startValue update = TextInput (startValue, update)
 
 let ui = [
 
@@ -33,6 +35,7 @@ let ui = [
     window "window 2" (300, 10) [
         text "test two"
         text "test three"
+        textinput (fun m -> m.Text) (fun m us -> { m with Text = us })
         button "test two" (fun m b -> { m with Button2 = b })
     ]
 
@@ -58,6 +61,10 @@ let renderElements children startModel =
             model
         | Button (s, update) ->
             ImGui.Button s |> update model
+        | TextInput (startValue, update) ->
+            let mutable buffer = startValue model
+            ImGui.InputText("", &buffer, 100ul) |> ignore
+            update startModel buffer
         | Direct o ->
             o model
             model
