@@ -3,6 +3,7 @@ open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
 open ImGuiNET
 open GameCore.ImGui.GameRunner
+open GameCore.ImGui.Helpers
 
 [<EntryPoint>]
 let main _ =
@@ -25,7 +26,8 @@ let main _ =
     let getView _ _ = [ ]
 
     let getUI () =
-        ImGui.Text "Hello, world!"
+        let model = { Button1 = false; Button2 = false }
+        render ui model |> ignore
         //ImGui.SliderFloat ("float", ref f, 0.0f, 1.0f, string.Empty, 1.f);
         //ImGui.ColorEdit3("clear color", ref clear_color);
         //if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
