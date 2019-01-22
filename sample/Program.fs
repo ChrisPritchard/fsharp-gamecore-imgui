@@ -26,7 +26,7 @@ let main _ =
     let getView _ _ = [ ]
 
     let getUI () =
-        let model = { Button1 = false; Button2 = false }
+        let model = { Button1 = false; Button2 = false; Text = "test" }
         render ui model |> ignore
         //ImGui.SliderFloat ("float", ref f, 0.0f, 1.0f, string.Empty, 1.f);
         //ImGui.ColorEdit3("clear color", ref clear_color);

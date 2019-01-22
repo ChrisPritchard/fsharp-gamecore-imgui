@@ -6,6 +6,7 @@ open System.Numerics
 type Model = {
     Button1: bool
     Button2: bool
+    Text: string
 }
 
 type UIWindow<'UIModel> = 
@@ -14,6 +15,8 @@ type UIWindow<'UIModel> =
 and UIElement<'UIModel> = 
     | Text of string
     | Button of string * update:('UIModel -> bool -> 'UIModel)
+    | Direct of ('UIModel -> unit)
+    | DirectUpdate of ('UIModel -> 'UIModel)
 
 let fixedwindow label (x, y, w, h) children = FixedWindow (label, x, y, w, h, children)
 let window label (x, y) children = Window (label, x, y, children)
@@ -36,12 +39,15 @@ let ui = [
     fixedwindow "" (300, 300, 200, 200) [
         text "line 1"
         text "line 2"
-        text "line 3"
+        DirectUpdate (fun model -> 
+            let mutable buffer = model.Text
+            ImGui.InputText("Text input", &buffer, 100ul) |> ignore
+            { model with Text = buffer })
+        Direct (fun model ->
+            ImGui.Text model.Text)
     ]
 
 ]
-
-let standardWindowFlags = ImGuiWindowFlags.NoCollapse ||| ImGuiWindowFlags.NoResize ||| ImGuiWindowFlags.NoMove
 
 let renderElements children startModel =
     (startModel, children)
@@ -51,25 +57,32 @@ let renderElements children startModel =
             ImGui.Text s
             model
         | Button (s, update) ->
-            ImGui.Button s |> update model)
-
-let flags label = 
-    if label = "" then standardWindowFlags ||| ImGuiWindowFlags.NoTitleBar else standardWindowFlags
+            ImGui.Button s |> update model
+        | Direct o ->
+            o model
+            model
+        | DirectUpdate (update) ->
+            update model)
 
 let render ui startModel = 
+    let standardWindowFlags = ImGuiWindowFlags.NoCollapse ||| ImGuiWindowFlags.NoResize ||| ImGuiWindowFlags.NoMove
+    let flags label = 
+        if label = "" then standardWindowFlags ||| ImGuiWindowFlags.NoTitleBar else standardWindowFlags
+
+    let renderWindow label (x, y) sizeOption children model =
+        ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
+        match sizeOption with 
+        | Some (w, h) -> ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
+        | _ -> ()
+        ImGui.Begin (label, flags label) |> ignore
+        let next = renderElements children model
+        ImGui.End ()
+        next
+
     (startModel, ui)
     ||> List.fold (fun model window ->
         match window with
         | FixedWindow (label, x, y, w, h, children) ->
-            ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
-            ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
-            ImGui.Begin (label, flags label) |> ignore
-            let next = renderElements children model
-            ImGui.End ()
-            next
+            renderWindow label (x, y) (Some (w, h)) children model
         | Window (label, x, y, children) ->
-            ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
-            ImGui.Begin (label, flags label) |> ignore
-            let next = renderElements children model
-            ImGui.End ()
-            next)
+            renderWindow label (x, y) None children model)
