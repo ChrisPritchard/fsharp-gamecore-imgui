@@ -28,6 +28,14 @@ let rec renderElement model =
         let mutable buffer = startValue model
         ImGui.InputText("", &buffer, uint32 length) |> ignore
         update model buffer
+    | Row children ->
+        let lasti = List.length children - 1
+        ((0, model), children) 
+        ||> List.fold (fun (i, last) child -> 
+            let next = renderElement last child
+            if i <> lasti then ImGui.SameLine ()
+            i + 1, next) 
+        |> snd
     | Direct o ->
         o model
         model

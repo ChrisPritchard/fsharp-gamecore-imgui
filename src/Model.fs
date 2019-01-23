@@ -6,6 +6,7 @@ type Element<'UIModel> =
     | Text of string
     | Button of string * update:('UIModel -> bool -> 'UIModel)
     | TextInput of startValue:('UIModel -> string) * length: int * update:('UIModel -> string -> 'UIModel)
+    | Row of children: Element<'UIModel> list
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
     | Window of windowConfig: WindowConfig * children: Element<'UIModel> list
@@ -36,3 +37,4 @@ let window config children = Window (config, children)
 let text value = Text value
 let button value update = Button (value, update)
 let textinput startValue length update = TextInput (startValue, length, update)
+let row children = Row children

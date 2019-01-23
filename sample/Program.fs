@@ -40,6 +40,11 @@ let main _ =
         yield window win1Config [
             text "hello world"
             button "this is a test" (fun m b -> { m with Button1 = b })
+            yield row [
+                text "row 1"
+                text "row 2"
+                text "row 3"
+            ]
         ]
 
         let win2Config = { title = Some "window 2"; pos = Some (300, 10); size = None; flags = standardFlags }
