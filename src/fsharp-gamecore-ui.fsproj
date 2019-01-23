@@ -16,7 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Helpers.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="Renderer.fs" />
     <Compile Include="GameLoop.fs" />
     <Compile Include="GameRunner.fs" />
   </ItemGroup>
