@@ -11,16 +11,18 @@ type Model = {
 
 type UIWindow<'UIModel> = 
     | FixedWindow of label:string * x:int * y:int * width:int * height:int * children: UIElement<'UIModel> list
-    | Window of label:string * x:int * y:int * children: UIElement<'UIModel> list
+    | DynamicWindow of label:string * x:int * y:int * children: UIElement<'UIModel> list
 and UIElement<'UIModel> = 
     | Text of string
     | Button of string * update:('UIModel -> bool -> 'UIModel)
     | TextInput of startValue:('UIModel -> string) * update:('UIModel -> string -> 'UIModel)
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
+    | FixedWindow of label:string * x:int * y:int * width:int * height:int * children: UIElement<'UIModel> list
+    | DynamicWindow of label:string * x:int * y:int * children: UIElement<'UIModel> list
 
 let fixedwindow label (x, y, w, h) children = FixedWindow (label, x, y, w, h, children)
-let window label (x, y) children = Window (label, x, y, children)
+let window label (x, y) children = DynamicWindow (label, x, y, children)
 let text value = Text value
 let button value update = Button (value, update)
 let textinput startValue update = TextInput (startValue, update)
@@ -48,48 +50,46 @@ let ui = [
             { model with Text = buffer })
         Direct (fun model ->
             ImGui.Text model.Text)
+        window "sub window" (20, 20) [
+            text "sub"
+        ]
     ]
 
 ]
 
-let renderElements children startModel =
-    (startModel, children)
-    ||> List.fold (fun model element ->
-        match element with
-        | Text s ->
-            ImGui.Text s
-            model
-        | Button (s, update) ->
-            ImGui.Button s |> update model
-        | TextInput (startValue, update) ->
-            let mutable buffer = startValue model
-            ImGui.InputText("", &buffer, 100ul) |> ignore
-            update startModel buffer
-        | Direct o ->
-            o model
-            model
-        | DirectUpdate (update) ->
-            update model)
+let standardWindowFlags = ImGuiWindowFlags.NoCollapse ||| ImGuiWindowFlags.NoResize ||| ImGuiWindowFlags.NoMove
+let flags label = 
+    if label = "" then standardWindowFlags ||| ImGuiWindowFlags.NoTitleBar else standardWindowFlags
 
-let render ui startModel = 
-    let standardWindowFlags = ImGuiWindowFlags.NoCollapse ||| ImGuiWindowFlags.NoResize ||| ImGuiWindowFlags.NoMove
-    let flags label = 
-        if label = "" then standardWindowFlags ||| ImGuiWindowFlags.NoTitleBar else standardWindowFlags
-
-    let renderWindow label (x, y) sizeOption children model =
+let rec renderElement model =
+    function
+    | Text s ->
+        ImGui.Text s
+        model
+    | Button (s, update) ->
+        ImGui.Button s |> update model
+    | TextInput (startValue, update) ->
+        let mutable buffer = startValue model
+        ImGui.InputText("", &buffer, 100ul) |> ignore
+        update model buffer
+    | Direct o ->
+        o model
+        model
+    | DirectUpdate (update) ->
+        update model
+    | FixedWindow (label, x, y, w, h, children) ->
         ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
-        match sizeOption with 
-        | Some (w, h) -> ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
-        | _ -> ()
+        ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
         ImGui.Begin (label, flags label) |> ignore
-        let next = renderElements children model
+        let next = (model, children) ||> List.fold renderElement
+        ImGui.End ()
+        next
+    | DynamicWindow (label, x, y, children) ->
+        ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
+        ImGui.Begin (label, flags label) |> ignore
+        let next = (model, children) ||> List.fold renderElement
         ImGui.End ()
         next
 
-    (startModel, ui)
-    ||> List.fold (fun model window ->
-        match window with
-        | FixedWindow (label, x, y, w, h, children) ->
-            renderWindow label (x, y) (Some (w, h)) children model
-        | Window (label, x, y, children) ->
-            renderWindow label (x, y) None children model)
+let render startModel ui = 
+    (startModel, ui) ||> List.fold renderElement

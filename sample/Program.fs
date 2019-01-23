@@ -28,7 +28,7 @@ let main _ =
     let startModel = { Button1 = false; Button2 = false; Text = "test" }
 
     let getUI uiModel _ =
-        render ui uiModel
+        render uiModel ui
         //ImGui.SliderFloat ("float", ref f, 0.0f, 1.0f, string.Empty, 1.f);
         //ImGui.ColorEdit3("clear color", ref clear_color);
         //if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
