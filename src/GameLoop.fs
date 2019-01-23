@@ -3,11 +3,12 @@
 open GameCore.GameLoop
 open ImGuiNET.Xna.Renderer
 
-type ImGuiGameLoop<'TModel> (config, updateModel, getView, getUI)
+type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
     inherit GameLoop<'TModel> (config, updateModel, getView)
 
     let mutable imGuiRenderer = Unchecked.defaultof<ImGuiRenderer>
+    let mutable uiModel: 'TUIModel = startUIModel
 
     do
         this.IsMouseVisible <- config.mouseVisible
@@ -22,6 +23,9 @@ type ImGuiGameLoop<'TModel> (config, updateModel, getView, getUI)
     override __.Draw (gameTime) = 
         base.Draw (gameTime)
 
-        imGuiRenderer.BeforeLayout(gameTime);
-        getUI base.currentModel
-        imGuiRenderer.AfterLayout();
+        match base.CurrentModel with
+        | Some m -> 
+            imGuiRenderer.BeforeLayout(gameTime);
+            uiModel <- getUI uiModel m
+            imGuiRenderer.AfterLayout();
+        | _ -> ()

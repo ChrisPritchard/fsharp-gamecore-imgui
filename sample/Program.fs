@@ -25,9 +25,10 @@ let main _ =
 
     let getView _ _ = [ ]
 
-    let getUI () =
-        let model = { Button1 = false; Button2 = false; Text = "test" }
-        render ui model |> ignore
+    let startModel = { Button1 = false; Button2 = false; Text = "test" }
+
+    let getUI uiModel _ =
+        render ui uiModel
         //ImGui.SliderFloat ("float", ref f, 0.0f, 1.0f, string.Empty, 1.f);
         //ImGui.ColorEdit3("clear color", ref clear_color);
         //if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
@@ -36,6 +37,6 @@ let main _ =
 
         //ImGui.InputText("Text input", _textBuffer, 100);
 
-    runImGuiGame config advanceModel getView getUI
+    runImGuiGame config advanceModel getView startModel getUI
 
     0
