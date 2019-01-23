@@ -12,7 +12,7 @@ type Model = {
 type UIElement<'UIModel> = 
     | Text of string
     | Button of string * update:('UIModel -> bool -> 'UIModel)
-    | TextInput of startValue:('UIModel -> string) * update:('UIModel -> string -> 'UIModel)
+    | TextInput of startValue:('UIModel -> string) * length: int * update:('UIModel -> string -> 'UIModel)
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
     | Window of windowConfig: WindowConfig * children: UIElement<'UIModel> list
@@ -42,7 +42,7 @@ let standardFlags = { noCollapse = true; noResize = true; noMove = false; noTitl
 let window config children = Window (config, children)
 let text value = Text value
 let button value update = Button (value, update)
-let textinput startValue update = TextInput (startValue, update)
+let textinput startValue length update = TextInput (startValue, length, update)
 
 let ui = [
 
@@ -56,7 +56,7 @@ let ui = [
     yield window win2Config [
         text "test two"
         text "test three"
-        textinput (fun m -> m.Text) (fun m us -> { m with Text = us })
+        textinput (fun m -> m.Text) 10 (fun m us -> { m with Text = us })
         button "test two" (fun m b -> { m with Button2 = b })
     ]
 
@@ -100,9 +100,9 @@ let rec renderElement model =
         model
     | Button (s, update) ->
         ImGui.Button s |> update model
-    | TextInput (startValue, update) ->
+    | TextInput (startValue, length, update) ->
         let mutable buffer = startValue model
-        ImGui.InputText("", &buffer, 100ul) |> ignore
+        ImGui.InputText("", &buffer, uint32 length) |> ignore
         update model buffer
     | Direct o ->
         o model
