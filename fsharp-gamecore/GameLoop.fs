@@ -134,6 +134,13 @@ type GameLoop<'TModel> (config, updateModel, getView)
         drawColour spriteBatch (position, 0, 40, 32) (Color.DarkSlateGray)
         drawText spriteBatch fontAsset (sprintf "%i" fps) (position + 20, 16) 18 Centre Color.White
 
+    /// Returns the current model, as of the last call to advanceModel
+    /// Only exposed when direct control is required, e.g. if a ui generator 
+    /// needs to be derived from the model outside of the advanceModel call
+    member __.CurrentModel
+        with get () =
+            currentModel
+
     override __.LoadContent() = 
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
 

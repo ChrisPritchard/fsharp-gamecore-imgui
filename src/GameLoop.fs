@@ -23,5 +23,5 @@ type ImGuiGameLoop<'TModel> (config, updateModel, getView, getUI)
         base.Draw (gameTime)
 
         imGuiRenderer.BeforeLayout(gameTime);
-        getUI ()
+        getUI base.currentModel
         imGuiRenderer.AfterLayout();
