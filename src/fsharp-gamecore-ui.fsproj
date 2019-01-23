@@ -23,11 +23,11 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.67.0" />
+    <PackageReference Include="imguinet-xna-renderer" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\fsharp-gamecore\fsharp-gamecore.fsproj" />
-    <ProjectReference Include="..\imgui-renderer\imgui-renderer.csproj" />
   </ItemGroup>
 
 </Project>
