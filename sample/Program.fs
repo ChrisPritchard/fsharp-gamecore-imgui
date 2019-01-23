@@ -16,7 +16,7 @@ let main _ =
         mouseVisible = true
     }
     
-    let advanceModel runState model = 
+    let advanceModel runState _ model = 
         if GameCore.GameModel.wasJustPressed Keys.Escape runState then None
         else
             match model with

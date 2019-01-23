@@ -86,7 +86,7 @@ let rec renderElement model =
         next
     | DynamicWindow (label, x, y, children) ->
         ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
-        ImGui.Begin (label, flags label) |> ignore
+        ImGui.Begin (label, flags label ||| ImGuiWindowFlags.AlwaysAutoResize) |> ignore
         let next = (model, children) ||> List.fold renderElement
         ImGui.End ()
         next
