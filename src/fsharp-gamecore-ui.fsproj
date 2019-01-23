@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.67.0" />
-    <PackageReference Include="imguinet-xna-renderer" Version="0.0.1" />
+    <PackageReference Include="imguinet-xna-renderer" Version="0.0.2" />
   </ItemGroup>
 
   <ItemGroup>
