@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="xna-renderer\xna-renderer.csproj" />
+    <ProjectReference Include="..\xna-renderer\xna-renderer.csproj" />
   </ItemGroup>
 
 </Project>

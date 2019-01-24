@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{727CB828-7
 		SIL Open Font License.txt = SIL Open Font License.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xna-renderer", "src\xna-renderer\xna-renderer.csproj", "{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xna-renderer", "xna-renderer\xna-renderer.csproj", "{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
