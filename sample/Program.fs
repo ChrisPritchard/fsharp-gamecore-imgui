@@ -1,13 +1,17 @@
 ﻿open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
-open GameCore.GameRunner
+open GameCore.ImGui.Model
+open GameCore.ImGui.Renderer
+open GameCore.ImGui.GameRunner
+open ImGuiNET
 
-open GameCore.UIElements.Button
 
-type SampleModel = {
-    button1: Button
-    label1: Button
+type Model = {
+    Button1: bool
+    Button2: bool
+    Text: string
+    Checked: bool
 }
 
 [<EntryPoint>]
@@ -16,59 +20,68 @@ let main _ =
     let config = {
         clearColour = Some (new Color (50, 50, 50))
         resolution = Windowed (800, 600)
-        assetsToLoad = [
-            Font ("connection", "./connection")
-        ]
+        assetsToLoad = []
         fpsFont = None
+        mouseVisible = true
     }
-
-    let startModel = {
-        button1 = { 
-            destRect = 20, 20, 150, 40
-            text = ["sample button"]
-            fontAsset = "connection"
-            fontSize = 16
-            idleColours = { background = Color.Black; border = Some (1, Color.DarkGray); text = Color.White }
-            hoverColours = Some { background = Color.White; border = Some (4, Color.Black); text = Color.Black }
-            pressedColours = Some { background = Color.Gray; border = Some (4, Color.Black); text = Color.White }
-            state = []
-        }
-        label1 = {
-            destRect = 190, 20, 300, 80
-            text = ["this is a centred label";"it uses a button with hover"]
-            fontAsset = "connection"
-            fontSize = 16
-            idleColours = { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.Gray }
-            hoverColours = Some { background = Color.DarkBlue; border = Some (2, Color.Blue); text = Color.White }
-            pressedColours = None
-            state = []
-        }
-    }
-
-    let advanceModel runState model = 
-        if wasJustPressed Keys.Escape runState then None
+    
+    let advanceModel runState _ model = 
+        if GameCore.GameModel.wasJustPressed Keys.Escape runState then None
         else
             match model with
-            | None -> Some startModel
-            | Some m -> 
-                Some { 
-                    m with 
-                        button1 = updateButton runState m.button1
-                        label1 = updateButton runState m.label1 }
+            | None -> Some ()
+            | _ -> model
 
-    let getView runState model = 
-        [
-            yield! getButtonView model.button1
-            yield Text ("connection", sprintf "%A" model.button1.state, (20, 70), 16, TopLeft, Color.White)
+    let getView _ _ = [ ]
 
-            yield! getButtonView model.label1
-            yield Text ("connection", sprintf "%A" model.label1.state, (190, 110), 16, TopLeft, Color.White)
+    let startModel = { Button1 = false; Button2 = false; Text = "test"; Checked = true }
 
-            let isPressed = isMousePressed (true, false) runState
-            let mx, my = runState.mouse.position 
-            yield Colour ((mx, my, 5, 5), (if isPressed then Color.Red else Color.Yellow))
+    let ui = [
+        let win1Config = { title = Some "window 1"; pos = Some (10, 10); size = Some (200, 200); flags = standardFlags }
+        yield window win1Config [
+            yield text "hello world"
+            yield button "this is a test" (fun m b -> { m with Button1 = b })
+            yield row [
+                text "row 1"
+                text "row 2"
+                text "row 3"
+            ]
+            yield multilineinput (fun _ -> "test") 100 (50, 50) (fun m _ -> m)
+            yield checkbox "check" (fun m -> m.Checked) (fun m b -> { m with Checked = b })
         ]
 
-    runGame config advanceModel getView
+        let win2Config = { title = Some "window 2"; pos = Some (300, 10); size = None; flags = standardFlags }
+        yield window win2Config [
+            text "test two"
+            text "test three"
+            textinput (fun m -> m.Text) 10 (fun m us -> { m with Text = us })
+            button "test two" (fun m b -> { m with Button2 = b })
+        ]
+
+        let win3Config = { title = None; pos = Some (300, 300); size = Some (200, 200); flags = { standardFlags with noTitleBar = true } }
+        yield window win3Config [
+            yield text "line 1"
+            yield text "line 2"
+            yield DirectUpdate (fun model -> 
+                let mutable buffer = model.Text
+                ImGui.InputText("Text input", &buffer, 100ul) |> ignore
+                { model with Text = buffer })
+            yield Direct (fun model ->
+                ImGui.Text model.Text)
+        
+            let win4Config = { title = Some "sub window"; pos = None; size = None; flags = standardFlags }
+            yield window win4Config [
+                text "sub"
+            ]
+        ]
+    ]
+
+    let getUI uiModel _ =
+        let style = {
+            windowRounding = 0.
+        }
+        render style uiModel ui
+
+    runImGuiGame config advanceModel getView startModel getUI
 
     0
