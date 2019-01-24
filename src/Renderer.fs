@@ -24,9 +24,17 @@ let rec renderElement model =
         model
     | Button (s, update) ->
         ImGui.Button s |> update model
+    | Checkbox (label, startValue, update) ->
+        let mutable state = startValue model
+        ImGui.Checkbox (label, &state) |> ignore
+        update model state
     | TextInput (startValue, length, update) ->
         let mutable buffer = startValue model
         ImGui.InputText("", &buffer, uint32 length) |> ignore
+        update model buffer
+    | TextAreaInput (startValue, length, (w, h), update) ->
+        let mutable buffer = startValue model
+        ImGui.InputTextMultiline ("", &buffer, uint32 length, new Vector2(float32 w, float32 h)) |> ignore
         update model buffer
     | Row children ->
         let lasti = List.length children - 1

@@ -11,6 +11,7 @@ type Model = {
     Button1: bool
     Button2: bool
     Text: string
+    Checked: bool
 }
 
 [<EntryPoint>]
@@ -33,18 +34,20 @@ let main _ =
 
     let getView _ _ = [ ]
 
-    let startModel = { Button1 = false; Button2 = false; Text = "test" }
+    let startModel = { Button1 = false; Button2 = false; Text = "test"; Checked = true }
 
     let ui = [
         let win1Config = { title = Some "window 1"; pos = Some (10, 10); size = Some (200, 200); flags = standardFlags }
         yield window win1Config [
-            text "hello world"
-            button "this is a test" (fun m b -> { m with Button1 = b })
+            yield text "hello world"
+            yield button "this is a test" (fun m b -> { m with Button1 = b })
             yield row [
                 text "row 1"
                 text "row 2"
                 text "row 3"
             ]
+            yield multilineinput (fun _ -> "test") 100 (50, 50) (fun m _ -> m)
+            yield checkbox "check" (fun m -> m.Checked) (fun m b -> { m with Checked = b })
         ]
 
         let win2Config = { title = Some "window 2"; pos = Some (300, 10); size = None; flags = standardFlags }

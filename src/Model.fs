@@ -8,8 +8,10 @@ type StyleConfig = {
 
 type Element<'UIModel> = 
     | Text of string
-    | Button of string * update:('UIModel -> bool -> 'UIModel)
-    | TextInput of startValue:('UIModel -> string) * length: int * update:('UIModel -> string -> 'UIModel)
+    | Button of label: string * update:('UIModel -> bool -> 'UIModel)
+    | Checkbox of label: string * startValue:('UIModel -> bool) * update:('UIModel -> bool -> 'UIModel)
+    | TextInput of startValue:('UIModel -> string) * maxLength: int * update:('UIModel -> string -> 'UIModel)
+    | TextAreaInput of startValue:('UIModel -> string) * maxLength: int * size:(int * int) * update:('UIModel -> string -> 'UIModel)
     | Row of children: Element<'UIModel> list
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
@@ -39,6 +41,8 @@ let standardFlags = { noCollapse = true; noResize = true; noMove = false; noTitl
 
 let window config children = Window (config, children)
 let text value = Text value
-let button value update = Button (value, update)
-let textinput startValue length update = TextInput (startValue, length, update)
+let button label update = Button (label, update)
+let checkbox label startValue update = Checkbox (label, startValue, update)
+let textinput startValue maxLength update = TextInput (startValue, maxLength, update)
+let multilineinput startValue maxLength size update = TextAreaInput (startValue, maxLength, size, update)
 let row children = Row children
