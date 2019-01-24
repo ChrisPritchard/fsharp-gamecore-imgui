@@ -28,6 +28,10 @@ let rec renderElement model =
         let mutable buffer = startValue model
         ImGui.InputText("", &buffer, uint32 length) |> ignore
         update model buffer
+    | TextAreaInput (startValue, length, (w, h), update) ->
+        let mutable buffer = startValue model
+        ImGui.InputTextMultiline ("", &buffer, uint32 length, new Vector2(float32 w, float32 h)) |> ignore
+        update model buffer
     | Row children ->
         let lasti = List.length children - 1
         ((0, model), children) 
