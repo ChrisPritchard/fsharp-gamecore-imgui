@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fsharp-gamecore-ui", "src\fsharp-gamecore-ui.fsproj", "{4A8A6D0A-17BB-4D1E-9901-3BA9FCFEE469}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fsharp-gamecore-imgui", "src\fsharp-gamecore-imgui.fsproj", "{4A8A6D0A-17BB-4D1E-9901-3BA9FCFEE469}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "sample", "sample\sample.fsproj", "{2A07E577-787A-4FB6-90C6-81669FCA4047}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{727CB828-7
 		SIL Open Font License.txt = SIL Open Font License.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xna-renderer", "src\xna-renderer\xna-renderer.csproj", "{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xna-renderer", "src\xna-renderer\xna-renderer.csproj", "{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

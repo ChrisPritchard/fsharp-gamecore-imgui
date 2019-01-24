@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageVersion>0.0.1</PackageVersion>
-    <PackageId>fsharp-gamecore-ui</PackageId>
-    <Title>FSharp GameCore UI</Title>
+    <PackageVersion>0.0.2</PackageVersion>
+    <PackageId>fsharp-gamecore-imgui</PackageId>
+    <Title>FSharp GameCore ImGui</Title>
     <Authors>Christopher Pritchard (https://github.com/ChrisPritchard)</Authors>
-    <Description>A set of UI elements for use with FSharp GameCore</Description>
-    <PackageTags>monogame fsharp</PackageTags>
-    <PackageLicenseUrl>http://unlicense.org/</PackageLicenseUrl>
+    <Description>Wrappers and helpers for ImGui.NET integration with FSharp-GameCore</Description>
+    <PackageTags>monogame fsharp imgui fsharp-gamecore</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/ChrisPritchard/fsharp-gamecore-ui</RepositoryUrl>
   </PropertyGroup>
 

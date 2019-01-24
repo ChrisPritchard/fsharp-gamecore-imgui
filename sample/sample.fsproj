@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\fsharp-gamecore-ui.fsproj" />
+    <ProjectReference Include="..\src\fsharp-gamecore-imgui.fsproj" />
   </ItemGroup>
 
 </Project>
