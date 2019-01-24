@@ -1,7 +1,7 @@
 ﻿module GameCore.ImGui.GameLoop
 
 open GameCore.GameLoop
-open ImGuiNET.Xna.Renderer
+open GameCore.ImGuiXnaRenderer
 
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
