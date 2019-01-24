@@ -24,6 +24,10 @@ let rec renderElement model =
         model
     | Button (s, update) ->
         ImGui.Button s |> update model
+    | Checkbox (label, startValue, update) ->
+        let mutable state = startValue model
+        ImGui.Checkbox (label, &state) |> ignore
+        update model state
     | TextInput (startValue, length, update) ->
         let mutable buffer = startValue model
         ImGui.InputText("", &buffer, uint32 length) |> ignore
