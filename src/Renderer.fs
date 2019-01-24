@@ -44,5 +44,10 @@ let rec renderElement model =
     | Window (config, children) ->
         renderWindow config children
 
-let render startModel ui = 
+let internal applyStyle styleConfig = 
+    let mutable style = ImGui.GetStyle ()
+    style.WindowRounding <- float32 styleConfig.windowRounding
+
+let render styleConfig startModel ui = 
+    applyStyle styleConfig
     (startModel, ui) ||> List.fold renderElement

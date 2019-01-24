@@ -74,7 +74,10 @@ let main _ =
     ]
 
     let getUI uiModel _ =
-        render uiModel ui
+        let style = {
+            windowRounding = 0.
+        }
+        render style uiModel ui
 
     runImGuiGame config advanceModel getView startModel getUI
 
