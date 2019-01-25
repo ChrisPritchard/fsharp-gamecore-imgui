@@ -6,6 +6,7 @@ open System.Runtime.InteropServices
 open Microsoft.FSharp.NativeInterop
 open Microsoft.Xna.Framework.Graphics
 open System
+open Microsoft.Xna.Framework
 
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
@@ -14,7 +15,16 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let mutable uiModel: 'TUIModel = startUIModel
 
     let mutable loadedTextures = Map.empty
-    let mutable lastTextureId = 0;
+    let mutable lastTextureId = 0
+
+    let rasteriserState = 
+        new RasterizerState
+            (CullMode = CullMode.None, 
+            DepthBias = 0.f, 
+            FillMode = FillMode.Solid, 
+            MultiSampleAntiAlias = false, 
+            ScissorTestEnable = true, 
+            SlopeScaleDepthBias = 0.f)
 
     do
         ImGui.CreateContext ()
@@ -47,7 +57,33 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let updateInput io =
         ()
 
-    let renderDrawData data =
+    let updateBuffers drawData = 
+        ()
+
+    let renderCommandLists drawData = 
+        ()
+
+    let renderDrawData (drawData: ImDrawDataPtr) =
+        let lastViewport = this.GraphicsDevice.Viewport
+        let lastScissorsBox = this.GraphicsDevice.ScissorRectangle
+
+        this.GraphicsDevice.BlendFactor <- Color.White
+        this.GraphicsDevice.BlendState <- BlendState.NonPremultiplied
+        this.GraphicsDevice.RasterizerState <- rasteriserState
+        this.GraphicsDevice.DepthStencilState <- DepthStencilState.DepthRead
+
+        let io = ImGui.GetIO ()
+        drawData.ScaleClipRects io.DisplayFramebufferScale
+
+        let present = this.GraphicsDevice.PresentationParameters
+        this.GraphicsDevice.Viewport <- new Viewport(0, 0, present.BackBufferWidth, present.BackBufferHeight)
+
+        updateBuffers drawData
+        renderCommandLists drawData
+
+        this.GraphicsDevice.Viewport <- lastViewport
+        this.GraphicsDevice.ScissorRectangle <- lastScissorsBox
+
         ()
 
     member __.CurrentUIModel
