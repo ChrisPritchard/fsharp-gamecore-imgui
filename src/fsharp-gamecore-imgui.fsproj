@@ -26,8 +26,4 @@
     <PackageReference Include="fsharp-gamecore" Version="0.0.7" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\xna-renderer\xna-renderer.csproj" />
-  </ItemGroup>
-
 </Project>
