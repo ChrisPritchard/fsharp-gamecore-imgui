@@ -2,11 +2,12 @@
 
 open GameCore.GameLoop
 open ImGuiNET
+open System
 open System.Runtime.InteropServices
 open Microsoft.FSharp.NativeInterop
 open Microsoft.Xna.Framework.Graphics
-open System
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Input
 
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
@@ -16,6 +17,8 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
     let mutable loadedTextures = Map.empty
     let mutable lastTextureId = 0
+
+    let io = ImGui.GetIO ()
 
     let rasteriserState = 
         new RasterizerState
@@ -30,8 +33,24 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         ImGui.CreateContext ()
         |> ImGui.SetCurrentContext
     
-    //do
-        // setup input
+    let keys =
+        let keyMap = [ 
+            ImGuiKey.Tab, Keys.Tab; ImGuiKey.LeftArrow, Keys.Left; ImGuiKey.RightArrow, Keys.Right
+            ImGuiKey.UpArrow, Keys.Up; ImGuiKey.DownArrow, Keys.Down; ImGuiKey.PageUp, Keys.PageUp
+            ImGuiKey.PageDown, Keys.PageDown; ImGuiKey.Home, Keys.Home; ImGuiKey.End, Keys.End
+            ImGuiKey.Delete, Keys.Delete; ImGuiKey.Backspace, Keys.Back; ImGuiKey.Enter, Keys.Enter
+            ImGuiKey.Escape, Keys.Escape; ImGuiKey.A, Keys.A; ImGuiKey.C, Keys.C
+            ImGuiKey.V, Keys.V; ImGuiKey.X, Keys.X; ImGuiKey.Y, Keys.Y; ImGuiKey.Z, Keys.Z ]
+        keyMap 
+        |> List.map (fun (dest, source) -> 
+            io.KeyMap.[int dest] <- int source
+            int source)
+        
+    do
+        let handler = fun _ (evt: TextInputEventArgs) ->
+            if evt.Character <> '\t' then io.AddInputCharacter (uint16 evt.Character)
+        this.Window.TextInput.AddHandler (new EventHandler<TextInputEventArgs> (handler))
+        io.Fonts.AddFontDefault () |> ignore
 
     let bindTexture texture = 
         let id = new IntPtr (lastTextureId)
@@ -40,7 +59,6 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         id
     
     let rebuildFontAtlas () =
-        let io = ImGui.GetIO ()
         let (pixelData, width, height, bytesPerPixel) = io.Fonts.GetTexDataAsRGBA32 ()
 
         let pixelData = NativePtr.toNativeInt pixelData
@@ -71,8 +89,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         this.GraphicsDevice.BlendState <- BlendState.NonPremultiplied
         this.GraphicsDevice.RasterizerState <- rasteriserState
         this.GraphicsDevice.DepthStencilState <- DepthStencilState.DepthRead
-
-        let io = ImGui.GetIO ()
+        
         drawData.ScaleClipRects io.DisplayFramebufferScale
 
         let present = this.GraphicsDevice.PresentationParameters
@@ -98,8 +115,6 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
         match base.CurrentModel with
         | Some model -> 
-            
-            let io = ImGui.GetIO()
             io.DeltaTime <- float32 gameTime.ElapsedGameTime.TotalSeconds
             updateInput io
             ImGui.NewFrame ()

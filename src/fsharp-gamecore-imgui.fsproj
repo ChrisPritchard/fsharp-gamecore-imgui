@@ -15,6 +15,10 @@
     <RepositoryUrl>https://github.com/ChrisPritchard/fsharp-gamecore-ui</RepositoryUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>9</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="Model.fs" />
     <Compile Include="Renderer.fs" />
