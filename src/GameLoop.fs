@@ -11,6 +11,12 @@ open Microsoft.Xna.Framework.Input
 
 type Vector2 = System.Numerics.Vector2
 
+type BufferSet<'TBuffer> = {
+    data: byte []
+    buffer: 'TBuffer
+    size: int
+}
+
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
     inherit GameLoop<'TModel> (config, (fun runState model -> updateModel runState this.CurrentUIModel model), getView)
@@ -21,6 +27,18 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let mutable lastTextureId = 0
 
     let mutable lastScrollWheel = 0
+
+    let vertSize = sizeof<ImDrawVert>
+    let vertDeclaration = 
+        new VertexDeclaration (
+            vertSize,
+            new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
+            new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+            new VertexElement(16, VertexElementFormat.Color, VertexElementUsage.Color, 0)
+        )
+
+    let mutable vertexBuffer = { data = [||]; buffer = Unchecked.defaultof<VertexBuffer>; size = 0 }
+    let mutable indexBuffer = { data = [||]; buffer = Unchecked.defaultof<IndexBuffer>; size = 0 }
 
     let io = ImGui.GetIO ()
 
@@ -96,8 +114,27 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         io.MouseWheel <- if scrollDelta > 0 then 1.f elif scrollDelta < 0 then -1.f else 0.f
         lastScrollWheel <- scrollDelta
 
-    let updateBuffers drawData = 
-        ()
+    let updateBuffers (drawData: ImDrawDataPtr) =
+        if drawData.TotalVtxCount > vertexBuffer.size then
+            if vertexBuffer.buffer <> null then vertexBuffer.buffer.Dispose ()
+            let size = int (float drawData.TotalVtxCount * 1.5)
+            vertexBuffer <- {
+                size = size
+                buffer = new VertexBuffer(this.GraphicsDevice, vertDeclaration, size, BufferUsage.None)
+                data = Array.zeroCreate(size * vertSize)
+            }
+
+        if drawData.TotalIdxCount > indexBuffer.size then
+            if indexBuffer.buffer <> null then indexBuffer.buffer.Dispose ()
+            let size = int (float drawData.TotalIdxCount * 1.5)
+            indexBuffer <- {
+                size = size
+                buffer = new IndexBuffer(this.GraphicsDevice, IndexElementSize.SixteenBits, size, BufferUsage.None)
+                data = Array.zeroCreate(size * sizeof<uint16>)
+            }
+        
+        // fixed memory copies
+        // buffer data sets
 
     let renderCommandLists drawData = 
         ()
@@ -115,7 +152,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         
         this.GraphicsDevice.Viewport <- new Viewport(0, 0, presentParams.BackBufferWidth, presentParams.BackBufferHeight)
 
-        updateBuffers drawData
+        if drawData.TotalVtxCount > 0 then updateBuffers drawData
         renderCommandLists drawData
 
         this.GraphicsDevice.Viewport <- lastViewport
@@ -127,6 +164,10 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     override __.Initialize() = 
         rebuildFontAtlas ()
         base.Initialize ()
+    
+    //override __.LoadContent () =
+    //    base.LoadContent ()
+    //    this.TextureMap
 
     override __.Draw (gameTime) = 
         base.Draw (gameTime)
