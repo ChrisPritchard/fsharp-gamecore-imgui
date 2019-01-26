@@ -9,6 +9,8 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
+type Vector2 = System.Numerics.Vector2
+
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
     inherit GameLoop<'TModel> (config, (fun runState model -> updateModel runState this.CurrentUIModel model), getView)
@@ -17,6 +19,8 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
     let mutable loadedTextures = Map.empty
     let mutable lastTextureId = 0
+
+    let mutable lastScrollWheel = 0
 
     let io = ImGui.GetIO ()
 
@@ -72,8 +76,25 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         io.Fonts.SetTexID newId
         io.Fonts.ClearTexData ()
 
-    let updateInput io =
-        ()
+    let updateInput (presentParams: PresentationParameters) =
+        let mouse, keyboard = Mouse.GetState (), Keyboard.GetState ()
+        keys |> List.iter (fun key -> io.KeysDown.[key] <- keyboard.IsKeyDown (enum<Keys>(key)))
+        
+        io.KeyShift <- keyboard.IsKeyDown Keys.LeftShift || keyboard.IsKeyDown Keys.RightShift
+        io.KeyCtrl <- keyboard.IsKeyDown Keys.LeftControl || keyboard.IsKeyDown Keys.RightControl
+        io.KeyAlt <- keyboard.IsKeyDown Keys.LeftAlt || keyboard.IsKeyDown Keys.RightAlt
+        io.KeySuper <- keyboard.IsKeyDown Keys.LeftWindows || keyboard.IsKeyDown Keys.RightWindows
+
+        io.DisplaySize <- new Vector2 (float32 presentParams.BackBufferWidth, float32 presentParams.BackBufferHeight)
+        io.DisplayFramebufferScale <- new Vector2 (1.f, 1.f)
+
+        io.MousePos <- new Vector2 (float32 mouse.X, float32 mouse.Y)
+        [mouse.LeftButton;mouse.RightButton;mouse.MiddleButton] 
+        |> List.iteri (fun i b -> io.MouseDown.[i] <- b = ButtonState.Pressed)
+
+        let scrollDelta = mouse.ScrollWheelValue - lastScrollWheel
+        io.MouseWheel <- if scrollDelta > 0 then 1.f elif scrollDelta < 0 then -1.f else 0.f
+        lastScrollWheel <- scrollDelta
 
     let updateBuffers drawData = 
         ()
@@ -81,7 +102,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let renderCommandLists drawData = 
         ()
 
-    let renderDrawData (drawData: ImDrawDataPtr) =
+    let renderDrawData (presentParams: PresentationParameters) (drawData: ImDrawDataPtr) =
         let lastViewport = this.GraphicsDevice.Viewport
         let lastScissorsBox = this.GraphicsDevice.ScissorRectangle
 
@@ -91,17 +112,14 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         this.GraphicsDevice.DepthStencilState <- DepthStencilState.DepthRead
         
         drawData.ScaleClipRects io.DisplayFramebufferScale
-
-        let present = this.GraphicsDevice.PresentationParameters
-        this.GraphicsDevice.Viewport <- new Viewport(0, 0, present.BackBufferWidth, present.BackBufferHeight)
+        
+        this.GraphicsDevice.Viewport <- new Viewport(0, 0, presentParams.BackBufferWidth, presentParams.BackBufferHeight)
 
         updateBuffers drawData
         renderCommandLists drawData
 
         this.GraphicsDevice.Viewport <- lastViewport
         this.GraphicsDevice.ScissorRectangle <- lastScissorsBox
-
-        ()
 
     member __.CurrentUIModel
         with get () = uiModel
@@ -116,12 +134,13 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         match base.CurrentModel with
         | Some model -> 
             io.DeltaTime <- float32 gameTime.ElapsedGameTime.TotalSeconds
-            updateInput io
+            let presentParams = this.GraphicsDevice.PresentationParameters
+            updateInput presentParams
             ImGui.NewFrame ()
 
             uiModel <- getUI uiModel model
             
             ImGui.Render ()
-            renderDrawData (ImGui.GetDrawData ())
+            renderDrawData presentParams (ImGui.GetDrawData ())
 
         | _ -> ()
