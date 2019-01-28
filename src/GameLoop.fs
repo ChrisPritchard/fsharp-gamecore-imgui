@@ -167,7 +167,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     
     //override __.LoadContent () =
     //    base.LoadContent ()
-    //    this.TextureMap
+    //    grab loaded texture2ds and create a pointer map for them, so imgui can draw them
 
     override __.Draw (gameTime) = 
         base.Draw (gameTime)
