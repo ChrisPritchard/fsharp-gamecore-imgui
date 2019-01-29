@@ -133,8 +133,19 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
                 data = Array.zeroCreate(size * sizeof<uint16>)
             }
         
-        // fixed memory copies
-        // buffer data sets
+        let mutable vtxOffset, idxOffset = 0, 0
+        for n = 0 to drawData.CmdListsCount - 1 do
+            let cmdList = drawData.CmdListsRange.[n]
+            let vtxDstPtr = NativePtr.toVoidPtr &&vertexBuffer.data.[vtxOffset * vertSize]
+            Buffer.MemoryCopy (cmdList.VtxBuffer.Data.ToPointer (), vtxDstPtr, int64 vertexBuffer.data.Length, int64 cmdList.VtxBuffer.Size * int64 vertSize)
+            let idxDstPtr = NativePtr.toVoidPtr &&indexBuffer.data.[idxOffset * sizeof<uint16>]
+            Buffer.MemoryCopy (cmdList.IdxBuffer.Data.ToPointer (), idxDstPtr, int64 indexBuffer.data.Length, int64 cmdList.IdxBuffer.Size * int64 sizeof<uint16>)
+
+            vtxOffset <- vtxOffset + cmdList.VtxBuffer.Size
+            idxOffset <- idxOffset + cmdList.VtxBuffer.Size
+
+        vertexBuffer.buffer.SetData (vertexBuffer.data, 0, drawData.TotalVtxCount * vertSize)
+        vertexBuffer.buffer.SetData (indexBuffer.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
 
     let renderCommandLists drawData = 
         ()
