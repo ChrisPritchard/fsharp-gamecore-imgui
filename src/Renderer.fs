@@ -4,7 +4,7 @@ open ImGuiNET
 open Model
 open System.Numerics
 
-let rec renderElement model =
+let rec renderElement textures model =
     let renderWindow config children =
         match config.pos with 
             | None -> () 
@@ -14,7 +14,7 @@ let rec renderElement model =
             | Some (w, h) -> ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
         let label = config.title |> Option.defaultValue ""
         ImGui.Begin (label, config.flags.AsImGuiWindowFlags) |> ignore
-        let next = (model, children) ||> List.fold renderElement
+        let next = (model, children) ||> List.fold (renderElement textures)
         ImGui.End ()
         next
 
@@ -36,11 +36,15 @@ let rec renderElement model =
         let mutable buffer = startValue model
         ImGui.InputTextMultiline ("", &buffer, uint32 length, new Vector2(float32 w, float32 h)) |> ignore
         update model buffer
+    | Image (assetKey, w, h) ->
+        let pointer = textures assetKey
+        ImGui.Image (pointer, new Vector2(float32 w, float32 h))
+        model
     | Row children ->
         let lasti = List.length children - 1
         ((0, model), children) 
         ||> List.fold (fun (i, last) child -> 
-            let next = renderElement last child
+            let next = renderElement textures last child
             if i <> lasti then ImGui.SameLine ()
             i + 1, next) 
         |> snd
@@ -56,6 +60,6 @@ let internal applyStyle styleConfig =
     let mutable style = ImGui.GetStyle ()
     style.WindowRounding <- float32 styleConfig.windowRounding
 
-let render styleConfig startModel ui = 
+let render styleConfig textures startModel ui = 
     applyStyle styleConfig
-    (startModel, ui) ||> List.fold renderElement
+    (startModel, ui) ||> List.fold (renderElement textures)

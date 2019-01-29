@@ -8,6 +8,7 @@ open Microsoft.FSharp.NativeInterop
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
+open System.Reflection
 
 type Vector2 = System.Numerics.Vector2
 
@@ -26,6 +27,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let mutable uiModel: 'TUIModel = startUIModel
 
     let mutable loadedTextures = Map.empty
+    let mutable gameCoreTextures = Map.empty
     let mutable lastTextureId = 0
 
     let mutable lastScrollWheel = 0
@@ -224,15 +226,20 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
     member __.CurrentUIModel
         with get () = uiModel
+
+    member __.Texture assetKey =
+        match Map.tryFind assetKey gameCoreTextures with
+        | Some pointer -> pointer
+        | None ->
+            let texture = base.Texture assetKey
+            let pointer = bindTexture texture
+            gameCoreTextures <- Map.add assetKey pointer gameCoreTextures
+            pointer
     
     override __.Initialize() = 
         rebuildFontAtlas ()
         base.Initialize ()
     
-    //override __.LoadContent () =
-    //    base.LoadContent ()
-    //    grab loaded texture2ds and create a pointer map for them, so imgui can draw them
-
     override __.Draw (gameTime) = 
         base.Draw (gameTime)
 
@@ -244,7 +251,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
             updateInput presentParams
             ImGui.NewFrame ()
 
-            uiModel <- getUI uiModel model
+            uiModel <- getUI this.Texture uiModel model
             
             ImGui.Render ()
             renderDrawData presentParams (ImGui.GetDrawData ())

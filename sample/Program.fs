@@ -20,7 +20,9 @@ let main _ =
     let config = {
         clearColour = Some (new Color (50, 50, 50))
         resolution = Windowed (800, 600)
-        assetsToLoad = []
+        assetsToLoad = [
+            Texture ("avatar", "image.png")
+        ]
         fpsFont = None
         mouseVisible = true
     }
@@ -74,13 +76,18 @@ let main _ =
                 text "sub"
             ]
         ]
+
+        let win5config = { title = Some "image"; pos = Some (10, 300); size = Some (200, 200); flags = standardFlags }
+        yield window win5config [
+            yield image "avatar" 150 150
+        ]
     ]
 
-    let getUI uiModel _ =
+    let getUI textures uiModel _ =
         let style = {
             windowRounding = 0.
         }
-        render style uiModel ui
+        render style textures uiModel ui
 
     runImGuiGame config advanceModel getView startModel getUI
 

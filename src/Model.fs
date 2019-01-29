@@ -12,6 +12,7 @@ type Element<'UIModel> =
     | Checkbox of label: string * startValue:('UIModel -> bool) * update:('UIModel -> bool -> 'UIModel)
     | TextInput of startValue:('UIModel -> string) * maxLength: int * update:('UIModel -> string -> 'UIModel)
     | TextAreaInput of startValue:('UIModel -> string) * maxLength: int * size:(int * int) * update:('UIModel -> string -> 'UIModel)
+    | Image of assetKey:string * width:int * height:int
     | Row of children: Element<'UIModel> list
     | Direct of ('UIModel -> unit)
     | DirectUpdate of ('UIModel -> 'UIModel)
@@ -46,3 +47,4 @@ let checkbox label startValue update = Checkbox (label, startValue, update)
 let textinput startValue maxLength update = TextInput (startValue, maxLength, update)
 let multilineinput startValue maxLength size update = TextAreaInput (startValue, maxLength, size, update)
 let row children = Row children
+let image assetKey width height = Image (assetKey, width, height)
