@@ -37,8 +37,8 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
             new VertexElement(16, VertexElementFormat.Color, VertexElementUsage.Color, 0)
         )
 
-    let mutable vertexBuffer = { data = [||]; buffer = Unchecked.defaultof<VertexBuffer>; size = 0 }
-    let mutable indexBuffer = { data = [||]; buffer = Unchecked.defaultof<IndexBuffer>; size = 0 }
+    let mutable vertexes = { data = [||]; buffer = Unchecked.defaultof<VertexBuffer>; size = 0 }
+    let mutable indices = { data = [||]; buffer = Unchecked.defaultof<IndexBuffer>; size = 0 }
 
     let io = ImGui.GetIO ()
 
@@ -115,19 +115,19 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         lastScrollWheel <- scrollDelta
 
     let updateBuffers (drawData: ImDrawDataPtr) =
-        if drawData.TotalVtxCount > vertexBuffer.size then
-            if vertexBuffer.buffer <> null then vertexBuffer.buffer.Dispose ()
+        if drawData.TotalVtxCount > vertexes.size then
+            if vertexes.buffer <> null then vertexes.buffer.Dispose ()
             let size = int (float drawData.TotalVtxCount * 1.5)
-            vertexBuffer <- {
+            vertexes <- {
                 size = size
                 buffer = new VertexBuffer(this.GraphicsDevice, vertDeclaration, size, BufferUsage.None)
                 data = Array.zeroCreate(size * vertSize)
             }
 
-        if drawData.TotalIdxCount > indexBuffer.size then
-            if indexBuffer.buffer <> null then indexBuffer.buffer.Dispose ()
+        if drawData.TotalIdxCount > indices.size then
+            if indices.buffer <> null then indices.buffer.Dispose ()
             let size = int (float drawData.TotalIdxCount * 1.5)
-            indexBuffer <- {
+            indices <- {
                 size = size
                 buffer = new IndexBuffer(this.GraphicsDevice, IndexElementSize.SixteenBits, size, BufferUsage.None)
                 data = Array.zeroCreate(size * sizeof<uint16>)
@@ -137,23 +137,23 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         for n = 0 to drawData.CmdListsCount - 1 do
             let cmdList = drawData.CmdListsRange.[n]
 
-            let vtxDstPtr = NativePtr.toVoidPtr &&vertexBuffer.data.[vtxOffset * vertSize]
-            Buffer.MemoryCopy (cmdList.VtxBuffer.Data.ToPointer (), vtxDstPtr, int64 vertexBuffer.data.Length, int64 cmdList.VtxBuffer.Size * int64 vertSize)
-            let idxDstPtr = NativePtr.toVoidPtr &&indexBuffer.data.[idxOffset * sizeof<uint16>]
-            Buffer.MemoryCopy (cmdList.IdxBuffer.Data.ToPointer (), idxDstPtr, int64 indexBuffer.data.Length, int64 cmdList.IdxBuffer.Size * int64 sizeof<uint16>)
+            let vtxDstPtr = NativePtr.toVoidPtr &&vertexes.data.[vtxOffset * vertSize]
+            Buffer.MemoryCopy (cmdList.VtxBuffer.Data.ToPointer (), vtxDstPtr, int64 vertexes.data.Length, int64 cmdList.VtxBuffer.Size * int64 vertSize)
+            let idxDstPtr = NativePtr.toVoidPtr &&indices.data.[idxOffset * sizeof<uint16>]
+            Buffer.MemoryCopy (cmdList.IdxBuffer.Data.ToPointer (), idxDstPtr, int64 indices.data.Length, int64 cmdList.IdxBuffer.Size * int64 sizeof<uint16>)
 
             vtxOffset <- vtxOffset + cmdList.VtxBuffer.Size
             idxOffset <- idxOffset + cmdList.VtxBuffer.Size
 
-        vertexBuffer.buffer.SetData (vertexBuffer.data, 0, drawData.TotalVtxCount * vertSize)
-        vertexBuffer.buffer.SetData (indexBuffer.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
+        vertexes.buffer.SetData (vertexes.data, 0, drawData.TotalVtxCount * vertSize)
+        vertexes.buffer.SetData (indices.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
 
     let updateEffect texture2d =
         Unchecked.defaultof<Effect>
 
     let renderCommandLists (drawData: ImDrawDataPtr) = 
-        this.GraphicsDevice.SetVertexBuffer vertexBuffer.buffer
-        this.GraphicsDevice.Indices <- indexBuffer.buffer
+        this.GraphicsDevice.SetVertexBuffer vertexes.buffer
+        this.GraphicsDevice.Indices <- indices.buffer
 
         let mutable vtxOffset, idxOffset = 0, 0
 
