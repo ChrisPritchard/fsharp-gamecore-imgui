@@ -201,7 +201,6 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
                 idxOffset <- idxOffset + int drawCmd.ElemCount
 
             vtxOffset <- vtxOffset + cmdList.VtxBuffer.Size
-        ()
 
     let renderDrawData (presentParams: PresentationParameters) (drawData: ImDrawDataPtr) =
         let io = ImGui.GetIO ()
