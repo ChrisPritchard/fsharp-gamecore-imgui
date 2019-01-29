@@ -136,6 +136,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         let mutable vtxOffset, idxOffset = 0, 0
         for n = 0 to drawData.CmdListsCount - 1 do
             let cmdList = drawData.CmdListsRange.[n]
+
             let vtxDstPtr = NativePtr.toVoidPtr &&vertexBuffer.data.[vtxOffset * vertSize]
             Buffer.MemoryCopy (cmdList.VtxBuffer.Data.ToPointer (), vtxDstPtr, int64 vertexBuffer.data.Length, int64 cmdList.VtxBuffer.Size * int64 vertSize)
             let idxDstPtr = NativePtr.toVoidPtr &&indexBuffer.data.[idxOffset * sizeof<uint16>]
@@ -147,7 +148,46 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         vertexBuffer.buffer.SetData (vertexBuffer.data, 0, drawData.TotalVtxCount * vertSize)
         vertexBuffer.buffer.SetData (indexBuffer.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
 
-    let renderCommandLists drawData = 
+    let updateEffect texture2d =
+        Unchecked.defaultof<Effect>
+
+    let renderCommandLists (drawData: ImDrawDataPtr) = 
+        this.GraphicsDevice.SetVertexBuffer vertexBuffer.buffer
+        this.GraphicsDevice.Indices <- indexBuffer.buffer
+
+        let mutable vtxOffset, idxOffset = 0, 0
+
+        for n = 0 to drawData.CmdListsCount - 1 do
+            let cmdList = drawData.CmdListsRange.[n]
+
+            for cmdi = 0 to cmdList.CmdBuffer.Size - 1 do
+                let drawCmd = cmdList.CmdBuffer.[cmdi]
+
+                match Map.tryFind drawCmd.TextureId loadedTextures with
+                | None -> failwith (sprintf "Could not find a texture with id '%A', please check your bindings" drawCmd.TextureId)
+                | Some texture2d ->
+                    
+                    this.GraphicsDevice.ScissorRectangle <- new Rectangle(
+                            int drawCmd.ClipRect.X,
+                            int drawCmd.ClipRect.Y,
+                            int (drawCmd.ClipRect.Z - drawCmd.ClipRect.X),
+                            int (drawCmd.ClipRect.W - drawCmd.ClipRect.Y)
+                        )
+                    
+                    let effect = updateEffect texture2d
+                    effect.CurrentTechnique.Passes |> Seq.iter (fun pass ->
+                        pass.Apply ()
+                        this.GraphicsDevice.DrawIndexedPrimitives (
+                            PrimitiveType.TriangleList,
+                            vtxOffset,
+                            0, 
+                            cmdList.VtxBuffer.Size, 
+                            idxOffset, 
+                            int drawCmd.ElemCount / 3))
+                    
+                idxOffset <- idxOffset + int drawCmd.ElemCount
+
+            vtxOffset <- vtxOffset + cmdList.VtxBuffer.Size
         ()
 
     let renderDrawData (presentParams: PresentationParameters) (drawData: ImDrawDataPtr) =
