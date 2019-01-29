@@ -8,7 +8,7 @@ open Microsoft.FSharp.NativeInterop
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
-open System.Reflection
+open Renderer
 
 type Vector2 = System.Numerics.Vector2
 
@@ -20,11 +20,11 @@ type BufferSet<'TBuffer> = {
 
 /// Largely a F# port of https://github.com/mellinoe/ImGui.NET/blob/master/src/ImGui.NET.SampleProgram.XNA/ImGuiRenderer.cs
 /// Credit to mellinoe@gmail.com
-type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
+type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, getUI)
     as this = 
-    inherit GameLoop<'TModel> (config, (fun runState model -> updateModel runState this.CurrentUIModel model), getView)
+    inherit GameLoop<'TModel> (config, (fun runState model -> updateModel runState this.LastUIModel model), getView)
 
-    let mutable uiModel: 'TUIModel = startUIModel
+    let mutable lastUIModel = Unchecked.defaultof<'TUIModel>
 
     let mutable loadedTextures = Map.empty
     let mutable gameCoreTextures = Map.empty
@@ -223,20 +223,20 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
         this.GraphicsDevice.Viewport <- lastViewport
         this.GraphicsDevice.ScissorRectangle <- lastScissorsBox
-
-    member __.CurrentUIModel
-        with get () = uiModel
-
-    member __.Texture assetKey =
+    
+    let getTexure assetKey =
         match Map.tryFind assetKey gameCoreTextures with
         | Some pointer -> pointer
         | None ->
-            let texture = base.Texture assetKey
+            let texture = this.Texture assetKey
             let pointer = bindTexture texture
             gameCoreTextures <- Map.add assetKey pointer gameCoreTextures
             pointer
+
+    member internal __.LastUIModel
+        with get () = lastUIModel
     
-    override __.Initialize() = 
+    override __.Initialize () = 
         rebuildFontAtlas ()
         base.Initialize ()
     
@@ -245,14 +245,16 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
         match base.CurrentModel with
         | Some model -> 
+
             let io = ImGui.GetIO ()
             io.DeltaTime <- float32 gameTime.ElapsedGameTime.TotalSeconds
             let presentParams = this.GraphicsDevice.PresentationParameters
             updateInput presentParams
             ImGui.NewFrame ()
 
-            uiModel <- getUI this.Texture uiModel model
-            
+            let startModel, uiElements = getUI model
+            lastUIModel <- render getTexure startModel uiElements
+                        
             ImGui.Render ()
             renderDrawData presentParams (ImGui.GetDrawData ())
 

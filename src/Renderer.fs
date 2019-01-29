@@ -4,7 +4,7 @@ open ImGuiNET
 open Model
 open System.Numerics
 
-let rec renderElement textures model =
+let rec internal renderElement textures model =
     let renderWindow config children =
         match config.pos with 
             | None -> () 
@@ -56,10 +56,5 @@ let rec renderElement textures model =
     | Window (config, children) ->
         renderWindow config children
 
-let internal applyStyle styleConfig = 
-    let mutable style = ImGui.GetStyle ()
-    style.WindowRounding <- float32 styleConfig.windowRounding
-
-let render styleConfig textures startModel ui = 
-    applyStyle styleConfig
+let internal render textures startModel ui = 
     (startModel, ui) ||> List.fold (renderElement textures)

@@ -36,8 +36,6 @@ let main _ =
 
     let getView _ _ = [ ]
 
-    let startModel = { Button1 = false; Button2 = false; Text = "test"; Checked = true }
-
     let ui = [
         let win1Config = { title = Some "window 1"; pos = Some (10, 10); size = Some (200, 200); flags = standardFlags }
         yield window win1Config [
@@ -62,6 +60,7 @@ let main _ =
 
         let win3Config = { title = None; pos = Some (300, 300); size = Some (200, 200); flags = { standardFlags with noTitleBar = true } }
         yield window win3Config [
+
             yield text "line 1"
             yield text "line 2"
             yield DirectUpdate (fun model -> 
@@ -83,12 +82,10 @@ let main _ =
         ]
     ]
 
-    let getUI textures uiModel _ =
-        let style = {
-            windowRounding = 0.
-        }
-        render style textures uiModel ui
+    let getUI _ =
+        let startModel = { Button1 = false; Button2 = false; Text = "test"; Checked = true }
+        startModel, ui
 
-    runImGuiGame config advanceModel getView startModel getUI
+    runImGuiGame config advanceModel getView getUI
 
     0

@@ -2,10 +2,6 @@
 
 open ImGuiNET
 
-type StyleConfig = {
-    windowRounding: float
-}
-
 type Element<'UIModel> = 
     | Text of string
     | Button of label: string * update:('UIModel -> bool -> 'UIModel)
