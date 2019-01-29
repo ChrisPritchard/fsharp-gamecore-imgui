@@ -40,8 +40,6 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
     let mutable vertexes = { data = [||]; buffer = Unchecked.defaultof<VertexBuffer>; size = 0 }
     let mutable indices = { data = [||]; buffer = Unchecked.defaultof<IndexBuffer>; size = 0 }
 
-    let io = ImGui.GetIO ()
-
     let rasteriserState = 
         new RasterizerState
             (CullMode = CullMode.None, 
@@ -56,6 +54,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         |> ImGui.SetCurrentContext
     
     let keys =
+        let io = ImGui.GetIO ()
         let keyMap = [ 
             ImGuiKey.Tab, Keys.Tab; ImGuiKey.LeftArrow, Keys.Left; ImGuiKey.RightArrow, Keys.Right
             ImGuiKey.UpArrow, Keys.Up; ImGuiKey.DownArrow, Keys.Down; ImGuiKey.PageUp, Keys.PageUp
@@ -69,6 +68,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
             int source)
         
     do
+        let io = ImGui.GetIO ()
         let handler = fun _ (evt: TextInputEventArgs) ->
             if evt.Character <> '\t' then io.AddInputCharacter (uint16 evt.Character)
         this.Window.TextInput.AddHandler (new EventHandler<TextInputEventArgs> (handler))
@@ -81,6 +81,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         id
     
     let rebuildFontAtlas () =
+        let io = ImGui.GetIO ()
         let (pixelData, width, height, bytesPerPixel) = io.Fonts.GetTexDataAsRGBA32 ()
 
         let pixelData = NativePtr.toNativeInt pixelData
@@ -95,6 +96,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         io.Fonts.ClearTexData ()
 
     let updateInput (presentParams: PresentationParameters) =
+        let io = ImGui.GetIO ()
         let mouse, keyboard = Mouse.GetState (), Keyboard.GetState ()
         keys |> List.iter (fun key -> io.KeysDown.[key] <- keyboard.IsKeyDown (enum<Keys>(key)))
         
@@ -149,7 +151,16 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         vertexes.buffer.SetData (indices.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
 
     let updateEffect texture2d =
-        Unchecked.defaultof<Effect>
+        let io = ImGui.GetIO ()
+        let projection = 
+            Matrix.CreateOrthographicOffCenter (0.5f, io.DisplaySize.X + 0.5f, io.DisplaySize.Y + 0.5f, 0.5f, -1.f, 1.f)
+        new BasicEffect (this.GraphicsDevice,
+                World = Matrix.Identity,
+                View = Matrix.Identity,
+                Projection = projection,
+                TextureEnabled = true,
+                Texture = texture2d,
+                VertexColorEnabled = true)
 
     let renderCommandLists (drawData: ImDrawDataPtr) = 
         this.GraphicsDevice.SetVertexBuffer vertexes.buffer
@@ -191,6 +202,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
         ()
 
     let renderDrawData (presentParams: PresentationParameters) (drawData: ImDrawDataPtr) =
+        let io = ImGui.GetIO ()
         let lastViewport = this.GraphicsDevice.Viewport
         let lastScissorsBox = this.GraphicsDevice.ScissorRectangle
 
@@ -225,6 +237,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
 
         match base.CurrentModel with
         | Some model -> 
+            let io = ImGui.GetIO ()
             io.DeltaTime <- float32 gameTime.ElapsedGameTime.TotalSeconds
             let presentParams = this.GraphicsDevice.PresentationParameters
             updateInput presentParams
