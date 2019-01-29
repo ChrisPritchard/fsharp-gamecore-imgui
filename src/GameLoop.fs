@@ -145,10 +145,10 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIMod
             Buffer.MemoryCopy (cmdList.IdxBuffer.Data.ToPointer (), idxDstPtr, int64 indices.data.Length, int64 cmdList.IdxBuffer.Size * int64 sizeof<uint16>)
 
             vtxOffset <- vtxOffset + cmdList.VtxBuffer.Size
-            idxOffset <- idxOffset + cmdList.VtxBuffer.Size
+            idxOffset <- idxOffset + cmdList.IdxBuffer.Size
 
         vertexes.buffer.SetData (vertexes.data, 0, drawData.TotalVtxCount * vertSize)
-        vertexes.buffer.SetData (indices.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
+        indices.buffer.SetData (indices.data, 0, drawData.TotalIdxCount * sizeof<uint16>)
 
     let updateEffect texture2d =
         let io = ImGui.GetIO ()
