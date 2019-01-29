@@ -17,6 +17,8 @@ type BufferSet<'TBuffer> = {
     size: int
 }
 
+/// Largely a F# port of https://github.com/mellinoe/ImGui.NET/blob/master/src/ImGui.NET.SampleProgram.XNA/ImGuiRenderer.cs
+/// Credit to mellinoe@gmail.com
 type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, startUIModel, getUI)
     as this = 
     inherit GameLoop<'TModel> (config, (fun runState model -> updateModel runState this.CurrentUIModel model), getView)
