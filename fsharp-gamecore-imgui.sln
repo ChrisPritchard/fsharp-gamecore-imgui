@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{727CB828-7
 		SIL Open Font License.txt = SIL Open Font License.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xna-renderer", "xna-renderer\xna-renderer.csproj", "{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,18 +49,6 @@ Global
 		{2A07E577-787A-4FB6-90C6-81669FCA4047}.Release|x64.Build.0 = Release|Any CPU
 		{2A07E577-787A-4FB6-90C6-81669FCA4047}.Release|x86.ActiveCfg = Release|Any CPU
 		{2A07E577-787A-4FB6-90C6-81669FCA4047}.Release|x86.Build.0 = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|x64.Build.0 = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Debug|x86.Build.0 = Debug|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|x64.ActiveCfg = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|x64.Build.0 = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|x86.ActiveCfg = Release|Any CPU
-		{C008AFAF-0A22-4D70-8F1F-15B35B2BB198}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
