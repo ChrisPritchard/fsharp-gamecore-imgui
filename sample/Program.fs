@@ -2,7 +2,6 @@
 open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
 open GameCore.ImGui.Model
-open GameCore.ImGui.Renderer
 open GameCore.ImGui.GameRunner
 open ImGuiNET
 
@@ -37,6 +36,12 @@ let main _ =
     let getView _ _ = [ ]
 
     let ui = [
+        yield Direct (fun _ ->
+            let style = ImGui.GetStyle ()
+            style.WindowRounding <- 0.f
+            ImGui.StyleColorsLight ()
+        )
+
         let win1Config = { title = Some "window 1"; pos = Some (10, 10); size = Some (200, 200); flags = standardFlags }
         yield window win1Config [
             yield text "hello world"
@@ -69,11 +74,6 @@ let main _ =
                 { model with Text = buffer })
             yield Direct (fun model ->
                 ImGui.Text model.Text)
-        
-            let win4Config = { title = Some "sub window"; pos = None; size = None; flags = standardFlags }
-            yield window win4Config [
-                text "sub"
-            ]
         ]
 
         let win5config = { title = Some "image"; pos = Some (10, 300); size = Some (200, 200); flags = standardFlags }
