@@ -24,7 +24,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Model.fs" />
-    <Compile Include="Renderer.fs" />
     <Compile Include="GameLoop.fs" />
     <Compile Include="GameRunner.fs" />
   </ItemGroup>

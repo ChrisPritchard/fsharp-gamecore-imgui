@@ -8,7 +8,6 @@ open Microsoft.FSharp.NativeInterop
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
-open Renderer
 
 type Vector2 = System.Numerics.Vector2
 
@@ -257,8 +256,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, getUI)
 
             ImGui.PushFont font
 
-            let startModel, uiElements = getUI model
-            lastUIModel <- render getTexure startModel uiElements
+            lastUIModel <- (getUI model ||> List.fold (fun last element -> element last getTexure))
                         
             ImGui.Render ()
             renderDrawData presentParams (ImGui.GetDrawData ())

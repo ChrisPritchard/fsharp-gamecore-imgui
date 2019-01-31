@@ -36,10 +36,11 @@ let main _ =
     let getView _ _ = [ ]
 
     let ui = [
-        yield Direct (fun _ ->
+        yield (fun model _ ->
             let style = ImGui.GetStyle ()
             style.WindowRounding <- 0.f
             ImGui.StyleColorsLight ()
+            model
         )
 
         let win1Config = { title = Some "window 1"; pos = Some (10, 10); size = Some (200, 200); flags = standardFlags }
@@ -51,7 +52,7 @@ let main _ =
                 text "row 2"
                 text "row 3"
             ]
-            yield multilineinput (fun _ -> "test") 100 (50, 50) (fun m _ -> m)
+            yield multilineinput (fun _ -> "test") 100 50 50 (fun m _ -> m)
             yield checkbox "check" (fun m -> m.Checked) (fun m b -> { m with Checked = b })
         ]
 
@@ -68,12 +69,13 @@ let main _ =
 
             yield text "line 1"
             yield text "line 2"
-            yield DirectUpdate (fun model -> 
+            yield (fun model _ -> 
                 let mutable buffer = model.Text
                 ImGui.InputText("Text input", &buffer, 100ul) |> ignore
                 { model with Text = buffer })
-            yield Direct (fun model ->
-                ImGui.Text model.Text)
+            yield (fun model _ ->
+                ImGui.Text model.Text
+                model)
         ]
 
         let win5config = { title = Some "image"; pos = Some (10, 300); size = Some (200, 200); flags = standardFlags }

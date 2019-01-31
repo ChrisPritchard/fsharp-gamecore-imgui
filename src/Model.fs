@@ -1,19 +1,9 @@
 ﻿module GameCore.ImGui.Model
 
 open ImGuiNET
+open System.Numerics
 
-type Element<'UIModel> = 
-    | Text of string
-    | Button of label: string * update:('UIModel -> bool -> 'UIModel)
-    | Checkbox of label: string * startValue:('UIModel -> bool) * update:('UIModel -> bool -> 'UIModel)
-    | TextInput of startValue:('UIModel -> string) * maxLength: int * update:('UIModel -> string -> 'UIModel)
-    | TextAreaInput of startValue:('UIModel -> string) * maxLength: int * size:(int * int) * update:('UIModel -> string -> 'UIModel)
-    | Image of assetKey:string * width:int * height:int
-    | Row of children: Element<'UIModel> list
-    | Direct of ('UIModel -> unit)
-    | DirectUpdate of ('UIModel -> 'UIModel)
-    | Window of windowConfig: WindowConfig * children: Element<'UIModel> list
-and WindowConfig = {
+type WindowConfig = {
     title: string option
     pos: (int * int) option
     size: (int * int) option
@@ -36,11 +26,58 @@ and WindowConfig = {
 
 let standardFlags = { noCollapse = true; noResize = true; noMove = false; noTitleBar = false; autoResize = true }
 
-let window config children = Window (config, children)
-let text value = Text value
-let button label update = Button (label, update)
-let checkbox label startValue update = Checkbox (label, startValue, update)
-let textinput startValue maxLength update = TextInput (startValue, maxLength, update)
-let multilineinput startValue maxLength size update = TextAreaInput (startValue, maxLength, size, update)
-let row children = Row children
-let image assetKey width height = Image (assetKey, width, height)
+let window config children =
+    fun model textures ->
+        match config.pos with 
+            | None -> () 
+            | Some (x, y) -> ImGui.SetNextWindowPos (new Vector2 (float32 x, float32 y))
+        match config.size with
+            | None -> ()
+            | Some (w, h) -> ImGui.SetNextWindowSize (new Vector2 (float32 w, float32 h))
+        let label = config.title |> Option.defaultValue ""
+        ImGui.Begin (label, config.flags.AsImGuiWindowFlags) |> ignore
+        let next = (model, children) ||> List.fold (fun last child -> child last textures)
+        ImGui.End ()
+        next
+
+let text s = 
+    fun model _ -> 
+        ImGui.Text s; model
+
+let button s update = 
+    fun model _ -> 
+        ImGui.Button s |> update model
+
+let checkbox label startValue update = 
+    fun model _ ->
+        let mutable state = startValue model
+        ImGui.Checkbox (label, &state) |> ignore
+        update model state
+
+let textinput startValue maxLength update = 
+    fun model _ ->
+        let mutable buffer = startValue model
+        ImGui.InputText("", &buffer, uint32 maxLength) |> ignore
+        update model buffer
+
+let multilineinput startValue maxLength width height update = 
+    fun model _ ->
+        let mutable buffer = startValue model
+        ImGui.InputTextMultiline ("", &buffer, uint32 maxLength, new Vector2(float32 width, float32 height)) |> ignore
+        update model buffer
+
+let image assetKey width height = 
+    fun model textures ->
+        let pointer = textures assetKey
+        ImGui.Image (pointer, new Vector2(float32 width, float32 height))
+        model
+
+let row children = 
+    fun model textures ->
+        let lasti = List.length children - 1
+        ((0, model), children) 
+        ||> List.fold (fun (i, last) child -> 
+            let next = child last textures
+            if i <> lasti then ImGui.SameLine ()
+            i + 1, next) 
+        |> snd
