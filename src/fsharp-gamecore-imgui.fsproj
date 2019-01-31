@@ -20,9 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Connection.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Compile Include="Model.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="GameLoop.fs" />
