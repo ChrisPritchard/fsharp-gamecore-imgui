@@ -30,6 +30,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, getUI)
     let mutable gameCoreTextures = Map.empty
     let mutable lastTextureId = 0
 
+    let mutable font = Unchecked.defaultof<ImFontPtr>
     let mutable lastScrollWheel = 0
 
     let vertSize = sizeof<ImDrawVert>
@@ -86,6 +87,7 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, getUI)
     
     let rebuildFontAtlas () =
         let io = ImGui.GetIO ()
+        font <- io.Fonts.AddFontFromFileTTF ("Karla-Regular.ttf", 18.f)
         let (pixelData, width, height, bytesPerPixel) = io.Fonts.GetTexDataAsRGBA32 ()
 
         let pixelData = NativePtr.toNativeInt pixelData
@@ -252,6 +254,8 @@ type ImGuiGameLoop<'TModel, 'TUIModel> (config, updateModel, getView, getUI)
             let presentParams = this.GraphicsDevice.PresentationParameters
             updateInput presentParams
             ImGui.NewFrame ()
+
+            ImGui.PushFont font
 
             let startModel, uiElements = getUI model
             lastUIModel <- render getTexure startModel uiElements

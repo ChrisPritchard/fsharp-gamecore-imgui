@@ -20,6 +20,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Karla-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="Model.fs" />
     <Compile Include="Renderer.fs" />
     <Compile Include="GameLoop.fs" />
