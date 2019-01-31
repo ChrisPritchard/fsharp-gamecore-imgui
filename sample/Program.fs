@@ -1,7 +1,7 @@
 ﻿open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open GameCore.GameModel
-open GameCore.ImGui.Model
+open GameCore.ImGui.Wrappers
 open GameCore.ImGui.GameRunner
 open ImGuiNET
 

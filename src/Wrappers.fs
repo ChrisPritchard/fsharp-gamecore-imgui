@@ -1,4 +1,4 @@
-﻿module GameCore.ImGui.Model
+﻿module GameCore.ImGui.Wrappers
 
 open ImGuiNET
 open System.Numerics
