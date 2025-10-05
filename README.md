@@ -1,5 +1,7 @@
 # fsharp-gamecore-imgui
 
+> **Note:** this package is very old and is now deprecated. The version of ImGui used has been significantly updated and the wrapper is now breaking. Plus, ultimately, if you wanted to use ImGui.NET, there is nothing stopping you from using the C# package in a F# project - the wrapper was only really so it could be used with https://github.com/ChrisPritchard/fsharp-gamecore, which itself is more of a proof of concept.
+
 Integrates ImGui.NET into FSharp-Gamecore. [ImGui.NET](https://github.com/mellinoe/ImGui.NET) is an excellent project by [mellinoe](https://github.com/mellinoe) that wraps [Dear ImGui](https://github.com/ocornut/imgui) by [ocornut](https://github.com/ocornut)
 
 This project provides a custom game loop class (easily runnable via the game runner method [runImGuiGame](https://github.com/ChrisPritchard/fsharp-gamecore-imgui/blob/master/src/GameRunner.fs#L7)) that includes an integrated XNA/Monogame renderer for ImGui invocations.
@@ -8,7 +10,7 @@ It requires a getUI method, given the last game state model and expected to retu
 
 In this way, a UI can be generated based on the game's last model state, and can provide a state for the next game state's construction.
 
-Available on Nuget at: <https://www.nuget.org/packages/fsharp-gamecore-imgui/0.0.2>
+~Available on Nuget at: <https://www.nuget.org/packages/fsharp-gamecore-imgui/0.0.2>~
 
 ## Samples
 
